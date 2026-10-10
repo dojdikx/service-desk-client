@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.ServiceDesk" parent="Theme.AppCompat.DayNight.NoActionBar" />
+</resources>
