@@ -19,8 +19,10 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -168,11 +171,7 @@ private fun TicketAssigneeField(
                 .menuAnchor()
                 .fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
-            colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFEFF6FF),
-                unfocusedContainerColor = Color(0xFFEFF6FF),
-                disabledContainerColor = Color(0xFFEFF6FF),
-            ),
+            colors = assigneeFieldColors(),
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -191,6 +190,25 @@ private fun TicketAssigneeField(
             }
         }
     }
+}
+
+@Composable
+private fun assigneeFieldColors(): TextFieldColors {
+    val scheme = MaterialTheme.colorScheme
+    val dark = scheme.background.luminance() < 0.5f
+    val container = if (dark) scheme.surfaceVariant else Color(0xFFEFF6FF)
+    val text = scheme.onSurface
+    return OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = container,
+        unfocusedContainerColor = container,
+        disabledContainerColor = container,
+        focusedTextColor = text,
+        unfocusedTextColor = text,
+        disabledTextColor = text,
+        focusedTrailingIconColor = scheme.onSurfaceVariant,
+        unfocusedTrailingIconColor = scheme.onSurfaceVariant,
+        disabledTrailingIconColor = scheme.onSurfaceVariant,
+    )
 }
 
 @Composable
