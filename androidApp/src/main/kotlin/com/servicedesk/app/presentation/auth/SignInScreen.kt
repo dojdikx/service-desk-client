@@ -87,6 +87,7 @@ fun SignInScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = !uiState.isLoading,
+                    shape = RoundedCornerShape(12.dp),
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 PasswordTextField(

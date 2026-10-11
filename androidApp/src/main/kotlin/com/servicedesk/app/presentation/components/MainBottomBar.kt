@@ -6,43 +6,55 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.servicedesk.app.MainRoutes
 import com.servicedesk.app.R
+import com.servicedesk.app.ui.theme.PrimaryBlue
 
 @Composable
 fun MainBottomBar(
     currentRoute: String,
     onNavigate: (String) -> Unit,
 ) {
-    NavigationBar {
+    val itemColors = NavigationBarItemDefaults.colors(
+        selectedIconColor = PrimaryBlue,
+        selectedTextColor = PrimaryBlue,
+        indicatorColor = MaterialTheme.colorScheme.surface,
+    )
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         NavigationBarItem(
             selected = currentRoute == MainRoutes.TICKETS,
             onClick = { onNavigate(MainRoutes.TICKETS) },
             icon = { Icon(Icons.Default.ConfirmationNumber, contentDescription = null) },
             label = { Text(stringResource(R.string.nav_tickets)) },
+            colors = itemColors,
         )
         NavigationBarItem(
             selected = currentRoute == MainRoutes.DIALOGS,
             onClick = { onNavigate(MainRoutes.DIALOGS) },
             icon = { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null) },
             label = { Text(stringResource(R.string.nav_dialogs)) },
+            colors = itemColors,
         )
         NavigationBarItem(
             selected = currentRoute == MainRoutes.ANALYTICS,
             onClick = { onNavigate(MainRoutes.ANALYTICS) },
             icon = { Icon(Icons.Default.Analytics, contentDescription = null) },
             label = { Text(stringResource(R.string.nav_analytics)) },
+            colors = itemColors,
         )
         NavigationBarItem(
             selected = currentRoute == MainRoutes.MORE,
             onClick = { onNavigate(MainRoutes.MORE) },
             icon = { Icon(Icons.Default.MoreHoriz, contentDescription = null) },
             label = { Text(stringResource(R.string.nav_more)) },
+            colors = itemColors,
         )
     }
 }

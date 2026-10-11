@@ -21,10 +21,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+enum class TicketStatusChip {
+    ALL,
+    PRIMARY,
+    IN_WORK,
+}
+
 data class TicketsUiState(
     val isLoading: Boolean = true,
     val tickets: List<TicketShortDto> = emptyList(),
     val columns: List<TicketColumnDto> = emptyList(),
+    val statusChip: TicketStatusChip = TicketStatusChip.ALL,
     val isAdmin: Boolean = false,
     val error: String? = null,
     val filters: TicketFiltersState = TicketFiltersState(),
@@ -99,6 +106,47 @@ class TicketsViewModel @Inject constructor(
         }
     }
 
+    fun onStatusChip(chip: TicketStatusChip) {
+        _uiState.update { it.copy(statusChip = chip) }
+    }
+
+    fun visibleTickets(): List<TicketShortDto> {
+        val state = _uiState.value
+        return state.tickets.filter { ticket -> matchesChip(ticket, state.statusChip) }
+    }
+
+    fun assignTicket(ticketId: Int, managerId: Int) {
+        viewModelScope.launch {
+            runCatching {
+                ticketsRepository.assignTicket(ticketId, managerId)
+            }.onSuccess { updated ->
+                _uiState.update { state ->
+                    state.copy(
+                        tickets = state.tickets.map { ticket ->
+                            if (ticket.ticketId != ticketId) ticket else {
+                                ticket.copy(
+                                    assignedTo = updated.assignedTo,
+                                    assigneeName = state.staff.find { it.id == managerId }?.displayName(),
+                                )
+                            }
+                        },
+                    )
+                }
+            }.onFailure { e ->
+                _uiState.update {
+                    it.copy(error = e.toAuthMessage(appStrings, R.string.ticket_assign_error))
+                }
+            }
+        }
+    }
+
+    private fun matchesChip(ticket: TicketShortDto, chip: TicketStatusChip): Boolean =
+        when (chip) {
+            TicketStatusChip.ALL -> true
+            TicketStatusChip.PRIMARY -> ticket.status.contains("Первичный", ignoreCase = true)
+            TicketStatusChip.IN_WORK -> ticket.status.contains("В работе", ignoreCase = true)
+        }
+
     fun openFiltersSheet() {
         _uiState.update { it.copy(filtersSheetVisible = true) }
     }
@@ -138,10 +186,4 @@ class TicketsViewModel @Inject constructor(
         refresh()
     }
 
-    fun kanbanColumns(): List<Pair<TicketColumnDto, List<TicketShortDto>>> {
-        val state = _uiState.value
-        return state.columns.map { column ->
-            column to state.tickets.filter { it.status == column.status }
-        }
-    }
 }

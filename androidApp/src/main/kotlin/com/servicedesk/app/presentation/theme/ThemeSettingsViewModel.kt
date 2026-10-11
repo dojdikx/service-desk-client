@@ -25,4 +25,14 @@ class ThemeSettingsViewModel @Inject constructor(
     fun setMode(mode: AppThemeMode) {
         viewModelScope.launch { themeStore.setMode(mode) }
     }
+
+    fun toggleLightDark(systemInDarkTheme: Boolean) {
+        val current = mode.value
+        val next = when (current) {
+            AppThemeMode.DARK -> AppThemeMode.LIGHT
+            AppThemeMode.LIGHT -> AppThemeMode.DARK
+            AppThemeMode.SYSTEM -> if (systemInDarkTheme) AppThemeMode.LIGHT else AppThemeMode.DARK
+        }
+        setMode(next)
+    }
 }

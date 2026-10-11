@@ -18,6 +18,7 @@ private val Context.localeDataStore by preferencesDataStore(name = "service_desk
 @Singleton
 class LocaleStore @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val activityRecreator: ActivityRecreator,
 ) {
     private val dataStore = context.localeDataStore
 
@@ -41,9 +42,12 @@ class LocaleStore @Inject constructor(
     }
 
     private fun applyLocale(language: AppLanguage) {
-        AppCompatDelegate.setApplicationLocales(
-            LocaleListCompat.forLanguageTags(language.tag),
-        )
+        val tags = when (language) {
+            AppLanguage.RUSSIAN -> "ru"
+            AppLanguage.CHINESE -> "zh-CN"
+        }
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tags))
+        activityRecreator.recreate?.invoke()
     }
 
     private companion object {
