@@ -15,6 +15,7 @@ import com.servicedesk.app.presentation.components.MainBottomBar
 import com.servicedesk.app.presentation.placeholders.AnalyticsPlaceholderScreen
 import com.servicedesk.app.presentation.placeholders.DialogsPlaceholderScreen
 import com.servicedesk.app.presentation.placeholders.MorePlaceholderScreen
+import com.servicedesk.app.presentation.tickets.CreateTicketScreen
 import com.servicedesk.app.presentation.tickets.TicketsScreen
 import com.servicedesk.app.presentation.session.SessionViewModel
 
@@ -23,9 +24,11 @@ fun MainShell(sessionViewModel: SessionViewModel) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: MainRoutes.TICKETS
+    val showBottomBar = currentRoute != MainRoutes.NEW_TICKET
 
     Scaffold(
         bottomBar = {
+            if (!showBottomBar) return@Scaffold
             MainBottomBar(
                 currentRoute = currentRoute,
                 onNavigate = { route ->
@@ -45,7 +48,23 @@ fun MainShell(sessionViewModel: SessionViewModel) {
             startDestination = MainRoutes.TICKETS,
             modifier = Modifier.padding(paddingValues),
         ) {
-            composable(MainRoutes.TICKETS) { TicketsScreen() }
+            composable(MainRoutes.TICKETS) {
+                TicketsScreen(
+                    navController = navController,
+                    onCreateTicket = { navController.navigate(MainRoutes.NEW_TICKET) },
+                )
+            }
+            composable(MainRoutes.NEW_TICKET) {
+                CreateTicketScreen(
+                    onBack = { navController.popBackStack() },
+                    onCreated = {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("tickets_refresh", true)
+                        navController.popBackStack()
+                    },
+                )
+            }
             composable(MainRoutes.DIALOGS) { DialogsPlaceholderScreen() }
             composable(MainRoutes.ANALYTICS) { AnalyticsPlaceholderScreen() }
             composable(MainRoutes.MORE) {

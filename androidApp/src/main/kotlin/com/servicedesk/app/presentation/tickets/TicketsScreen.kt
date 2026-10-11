@@ -29,7 +29,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavController
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,10 +48,36 @@ import com.servicedesk.app.ui.theme.PrimaryBlue
 
 @Composable
 fun TicketsScreen(
+    navController: NavController,
+    onCreateTicket: () -> Unit,
     viewModel: TicketsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val refreshFlow = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("tickets_refresh", false)
+    LaunchedEffect(refreshFlow) {
+        refreshFlow?.collect { shouldRefresh ->
+            if (shouldRefresh) {
+                viewModel.refresh()
+                navController.currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.set("tickets_refresh", false)
+            }
+        }
+    }
     val visible = viewModel.visibleTickets()
+
+    TicketFiltersSheet(
+        visible = uiState.filtersSheetVisible,
+        filters = uiState.filters,
+        isAdmin = uiState.isAdmin,
+        staff = uiState.staff,
+        onDismiss = viewModel::closeFiltersSheet,
+        onFiltersChange = viewModel::onDraftFiltersChange,
+        onApply = viewModel::applyFilters,
+        onClear = viewModel::clearFilters,
+    )
 
     Column(
         modifier = Modifier
@@ -107,17 +135,15 @@ fun TicketsScreen(
             }
             item {
                 FilterChip(
-                    selected = false,
-                    onClick = { },
+                    selected = uiState.filters.isActive,
+                    onClick = viewModel::openFiltersSheet,
                     label = { Text("Фильтры") },
-                    enabled = false,
                 )
             }
         }
 
         Button(
-            onClick = { },
-            enabled = false,
+            onClick = onCreateTicket,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(44.dp),

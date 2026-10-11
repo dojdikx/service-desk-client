@@ -2,7 +2,9 @@ package com.servicedesk.app.di
 
 import com.servicedesk.app.BuildConfig
 import com.servicedesk.app.data.api.AuthApi
+import com.servicedesk.app.data.api.StaffApi
 import com.servicedesk.app.data.api.TicketsApi
+import com.servicedesk.app.data.api.UsersApi
 import com.servicedesk.app.data.remote.TokenInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -62,4 +64,12 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideTicketsApi(retrofit: Retrofit): TicketsApi = retrofit.create(TicketsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUsersApi(retrofit: Retrofit): UsersApi = retrofit.create(UsersApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStaffApi(retrofit: Retrofit): StaffApi = retrofit.create(StaffApi::class.java)
 }
