@@ -35,6 +35,9 @@ interface TicketsApi {
 
     @PATCH("api/tickets/{id}")
     suspend fun patch(@Path("id") id: Int, @Body body: TicketPatchRequestDto): TicketDetailDto
+
+    @POST("api/tickets/{id}/read")
+    suspend fun markRead(@Path("id") id: Int)
 }
 
 @Serializable
@@ -79,6 +82,8 @@ data class TicketShortDto(
     val assigneeName: String? = null,
     val unreadCount: Int = 0,
     val serialNumber: String? = null,
+    val contactPhone: String? = null,
+    val reason: String? = null,
 )
 
 @Serializable

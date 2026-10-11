@@ -52,6 +52,7 @@ fun TicketsScreen(
     navController: NavController,
     onCreateTicket: () -> Unit,
     onOpenTicket: (Int) -> Unit,
+    onOpenSearch: () -> Unit,
     viewModel: TicketsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -93,22 +94,29 @@ fun TicketsScreen(
             modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
         )
 
-        OutlinedTextField(
-            value = uiState.searchQuery,
-            onValueChange = viewModel::onSearchChange,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Поиск заявок") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            trailingIcon = {
-                Text(
-                    text = "MAX",
-                    color = OnSurfaceMuted,
-                    modifier = Modifier.padding(end = 8.dp),
-                )
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onOpenSearch),
+        ) {
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Поиск заявок") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    Text(
+                        text = "MAX",
+                        color = OnSurfaceMuted,
+                        modifier = Modifier.padding(end = 8.dp),
+                    )
+                },
+                enabled = false,
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+            )
+        }
 
         LazyRow(
             modifier = Modifier.padding(vertical = 12.dp),

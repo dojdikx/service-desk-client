@@ -15,10 +15,12 @@ import androidx.navigation.navArgument
 import com.servicedesk.app.MainRoutes
 import com.servicedesk.app.presentation.components.MainBottomBar
 import com.servicedesk.app.presentation.placeholders.AnalyticsPlaceholderScreen
-import com.servicedesk.app.presentation.placeholders.DialogsPlaceholderScreen
+import com.servicedesk.app.presentation.dialogs.ChatScreen
+import com.servicedesk.app.presentation.dialogs.DialogsScreen
 import com.servicedesk.app.presentation.placeholders.MorePlaceholderScreen
 import com.servicedesk.app.presentation.tickets.CreateTicketScreen
 import com.servicedesk.app.presentation.tickets.TicketDetailScreen
+import com.servicedesk.app.presentation.tickets.TicketSearchScreen
 import com.servicedesk.app.presentation.tickets.TicketsScreen
 import com.servicedesk.app.presentation.session.SessionViewModel
 
@@ -28,7 +30,9 @@ fun MainShell(sessionViewModel: SessionViewModel) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: MainRoutes.TICKETS
     val showBottomBar = currentRoute != MainRoutes.NEW_TICKET &&
-        currentRoute?.startsWith("tickets/detail") != true
+        currentRoute != MainRoutes.TICKET_SEARCH &&
+        currentRoute?.startsWith("tickets/detail") != true &&
+        currentRoute?.startsWith("dialogs/chat") != true
 
     Scaffold(
         bottomBar = {
@@ -59,6 +63,13 @@ fun MainShell(sessionViewModel: SessionViewModel) {
                     onOpenTicket = { id ->
                         navController.navigate("tickets/detail/$id")
                     },
+                    onOpenSearch = { navController.navigate(MainRoutes.TICKET_SEARCH) },
+                )
+            }
+            composable(MainRoutes.TICKET_SEARCH) {
+                TicketSearchScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenTicket = { id -> navController.navigate("tickets/detail/$id") },
                 )
             }
             composable(
@@ -78,7 +89,17 @@ fun MainShell(sessionViewModel: SessionViewModel) {
                     },
                 )
             }
-            composable(MainRoutes.DIALOGS) { DialogsPlaceholderScreen() }
+            composable(MainRoutes.DIALOGS) {
+                DialogsScreen(
+                    onOpenChat = { id -> navController.navigate("dialogs/chat/$id") },
+                )
+            }
+            composable(
+                route = MainRoutes.CHAT,
+                arguments = listOf(navArgument("ticketId") { type = NavType.IntType }),
+            ) {
+                ChatScreen(onBack = { navController.popBackStack() })
+            }
             composable(MainRoutes.ANALYTICS) { AnalyticsPlaceholderScreen() }
             composable(MainRoutes.MORE) {
                 MorePlaceholderScreen(onSignOut = sessionViewModel::signOut)

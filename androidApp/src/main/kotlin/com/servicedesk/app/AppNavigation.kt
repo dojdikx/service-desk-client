@@ -22,7 +22,9 @@ object MainRoutes {
     const val TICKETS = "tickets"
     const val NEW_TICKET = "tickets/new"
     const val TICKET_DETAIL = "tickets/detail/{ticketId}"
+    const val TICKET_SEARCH = "tickets/search"
     const val DIALOGS = "dialogs"
+    const val CHAT = "dialogs/chat/{ticketId}"
     const val ANALYTICS = "analytics"
     const val MORE = "more"
 }

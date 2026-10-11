@@ -26,7 +26,6 @@ data class TicketsUiState(
     val isLoading: Boolean = true,
     val tickets: List<TicketShortDto> = emptyList(),
     val statusChip: TicketStatusChip = TicketStatusChip.ALL,
-    val searchQuery: String = "",
     val isAdmin: Boolean = false,
     val error: String? = null,
     val filters: TicketFiltersState = TicketFiltersState(),
@@ -87,10 +86,6 @@ class TicketsViewModel @Inject constructor(
         _uiState.update { it.copy(statusChip = chip) }
     }
 
-    fun onSearchChange(query: String) {
-        _uiState.update { it.copy(searchQuery = query) }
-    }
-
     fun openFiltersSheet() {
         _uiState.update { it.copy(filtersSheetVisible = true) }
     }
@@ -132,9 +127,7 @@ class TicketsViewModel @Inject constructor(
 
     fun visibleTickets(): List<TicketShortDto> {
         val state = _uiState.value
-        return state.tickets
-            .filter { ticket -> matchesChip(ticket, state.statusChip) }
-            .filter { ticket -> matchesSearch(ticket, state.searchQuery) }
+        return state.tickets.filter { ticket -> matchesChip(ticket, state.statusChip) }
     }
 
     private fun matchesChip(ticket: TicketShortDto, chip: TicketStatusChip): Boolean =
@@ -143,16 +136,4 @@ class TicketsViewModel @Inject constructor(
             TicketStatusChip.PRIMARY -> ticket.status.contains("Первичный", ignoreCase = true)
             TicketStatusChip.IN_WORK -> ticket.status.contains("В работе", ignoreCase = true)
         }
-
-    private fun matchesSearch(ticket: TicketShortDto, query: String): Boolean {
-        val q = query.trim()
-        if (q.isBlank()) return true
-        val haystack = listOfNotNull(
-            ticket.clientName,
-            ticket.lastMessage,
-            ticket.serialNumber,
-            ticket.status,
-        ).joinToString(" ")
-        return haystack.contains(q, ignoreCase = true)
-    }
 }
