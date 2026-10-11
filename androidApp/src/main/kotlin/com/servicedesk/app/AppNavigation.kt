@@ -21,6 +21,7 @@ import com.servicedesk.app.presentation.session.SessionViewModel
 object MainRoutes {
     const val TICKETS = "tickets"
     const val NEW_TICKET = "tickets/new"
+    const val TICKET_DETAIL = "tickets/detail/{ticketId}"
     const val DIALOGS = "dialogs"
     const val ANALYTICS = "analytics"
     const val MORE = "more"

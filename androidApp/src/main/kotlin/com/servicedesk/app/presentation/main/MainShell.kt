@@ -6,16 +6,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.servicedesk.app.MainRoutes
 import com.servicedesk.app.presentation.components.MainBottomBar
 import com.servicedesk.app.presentation.placeholders.AnalyticsPlaceholderScreen
 import com.servicedesk.app.presentation.placeholders.DialogsPlaceholderScreen
 import com.servicedesk.app.presentation.placeholders.MorePlaceholderScreen
 import com.servicedesk.app.presentation.tickets.CreateTicketScreen
+import com.servicedesk.app.presentation.tickets.TicketDetailScreen
 import com.servicedesk.app.presentation.tickets.TicketsScreen
 import com.servicedesk.app.presentation.session.SessionViewModel
 
@@ -24,7 +27,8 @@ fun MainShell(sessionViewModel: SessionViewModel) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: MainRoutes.TICKETS
-    val showBottomBar = currentRoute != MainRoutes.NEW_TICKET
+    val showBottomBar = currentRoute != MainRoutes.NEW_TICKET &&
+        currentRoute?.startsWith("tickets/detail") != true
 
     Scaffold(
         bottomBar = {
@@ -52,7 +56,16 @@ fun MainShell(sessionViewModel: SessionViewModel) {
                 TicketsScreen(
                     navController = navController,
                     onCreateTicket = { navController.navigate(MainRoutes.NEW_TICKET) },
+                    onOpenTicket = { id ->
+                        navController.navigate("tickets/detail/$id")
+                    },
                 )
+            }
+            composable(
+                route = MainRoutes.TICKET_DETAIL,
+                arguments = listOf(navArgument("ticketId") { type = NavType.IntType }),
+            ) {
+                TicketDetailScreen(onBack = { navController.popBackStack() })
             }
             composable(MainRoutes.NEW_TICKET) {
                 CreateTicketScreen(

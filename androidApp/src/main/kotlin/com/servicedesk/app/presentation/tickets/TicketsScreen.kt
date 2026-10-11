@@ -1,6 +1,7 @@
 package com.servicedesk.app.presentation.tickets
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,7 @@ import com.servicedesk.app.ui.theme.PrimaryBlue
 fun TicketsScreen(
     navController: NavController,
     onCreateTicket: () -> Unit,
+    onOpenTicket: (Int) -> Unit,
     viewModel: TicketsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -189,7 +191,11 @@ fun TicketsScreen(
                     contentPadding = PaddingValues(bottom = 16.dp),
                 ) {
                     items(visible, key = { it.ticketId }) { ticket ->
-                        TicketCard(ticket = ticket, showAssignee = uiState.isAdmin)
+                        TicketCard(
+                            ticket = ticket,
+                            showAssignee = uiState.isAdmin,
+                            onClick = { onOpenTicket(ticket.ticketId) },
+                        )
                     }
                 }
             }
@@ -207,11 +213,13 @@ private fun StatusChip(label: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun TicketCard(ticket: TicketShortDto, showAssignee: Boolean) {
+private fun TicketCard(ticket: TicketShortDto, showAssignee: Boolean, onClick: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         tonalElevation = 1.dp,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
