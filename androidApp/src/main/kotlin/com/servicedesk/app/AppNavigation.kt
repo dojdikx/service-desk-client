@@ -1,20 +1,22 @@
 package com.servicedesk.app
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.servicedesk.app.presentation.components.MainBottomBar
-import com.servicedesk.app.presentation.placeholders.AnalyticsPlaceholderScreen
-import com.servicedesk.app.presentation.placeholders.DialogsPlaceholderScreen
-import com.servicedesk.app.presentation.placeholders.MorePlaceholderScreen
-import com.servicedesk.app.presentation.placeholders.TicketsPlaceholderScreen
+import com.servicedesk.app.presentation.auth.RegisterScreen
+import com.servicedesk.app.presentation.auth.SignInScreen
+import com.servicedesk.app.presentation.main.MainShell
+import com.servicedesk.app.presentation.session.SessionStatus
+import com.servicedesk.app.presentation.session.SessionViewModel
 
 object MainRoutes {
     const val TICKETS = "tickets"
@@ -23,37 +25,45 @@ object MainRoutes {
     const val MORE = "more"
 }
 
-@Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route ?: MainRoutes.TICKETS
+object AuthRoutes {
+    const val SIGN_IN = "signin"
+    const val REGISTER = "register"
+}
 
-    Scaffold(
-        bottomBar = {
-            MainBottomBar(
-                currentRoute = currentRoute,
-                onNavigate = { route ->
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-            )
-        },
-    ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = MainRoutes.TICKETS,
-            modifier = Modifier.padding(paddingValues),
-        ) {
-            composable(MainRoutes.TICKETS) { TicketsPlaceholderScreen() }
-            composable(MainRoutes.DIALOGS) { DialogsPlaceholderScreen() }
-            composable(MainRoutes.ANALYTICS) { AnalyticsPlaceholderScreen() }
-            composable(MainRoutes.MORE) { MorePlaceholderScreen() }
+@Composable
+fun AppNavigation(sessionViewModel: SessionViewModel = hiltViewModel()) {
+    val sessionStatus by sessionViewModel.status.collectAsStateWithLifecycle()
+
+    when (sessionStatus) {
+        SessionStatus.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
+
+        SessionStatus.SignedOut -> {
+            val authNavController = rememberNavController()
+            NavHost(
+                navController = authNavController,
+                startDestination = AuthRoutes.SIGN_IN,
+            ) {
+                composable(AuthRoutes.SIGN_IN) {
+                    SignInScreen(
+                        onNavigateToRegister = {
+                            authNavController.navigate(AuthRoutes.REGISTER)
+                        },
+                        onSignedIn = sessionViewModel::onSignedIn,
+                    )
+                }
+                composable(AuthRoutes.REGISTER) {
+                    RegisterScreen(
+                        onNavigateBack = { authNavController.popBackStack() },
+                        onRegistered = sessionViewModel::onSignedIn,
+                    )
+                }
+            }
+        }
+
+        SessionStatus.SignedIn -> MainShell(sessionViewModel = sessionViewModel)
     }
 }

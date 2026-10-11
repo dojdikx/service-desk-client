@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,10 +32,29 @@ fun AnalyticsPlaceholderScreen() = PlaceholderScreen(
 )
 
 @Composable
-fun MorePlaceholderScreen() = PlaceholderScreen(
-    title = "Ещё",
-    subtitle = "Выгрузка, сотрудники, тема, выход",
-)
+fun MorePlaceholderScreen(onSignOut: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(text = "Ещё", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = "Выгрузка, сотрудники, тема",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        Button(
+            onClick = onSignOut,
+            modifier = Modifier.padding(top = 24.dp),
+        ) {
+            Text("Выйти")
+        }
+    }
+}
 
 @Composable
 private fun PlaceholderScreen(title: String, subtitle: String) {
