@@ -9,6 +9,8 @@ import com.servicedesk.app.data.api.TicketShortDto
 import com.servicedesk.app.data.realtime.RealtimeEventTypes
 import com.servicedesk.app.data.realtime.StaffRealtimeService
 import com.servicedesk.app.domain.tickets.TicketsRepository
+import com.servicedesk.app.R
+import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -40,6 +42,7 @@ class TicketsViewModel @Inject constructor(
     private val ticketsRepository: TicketsRepository,
     private val authApi: AuthApi,
     private val staffApi: StaffApi,
+    private val appStrings: AppStrings,
     staffRealtimeService: StaffRealtimeService,
 ) : ViewModel() {
 
@@ -92,7 +95,7 @@ class TicketsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.toAuthMessage("Не удалось загрузить заявки"),
+                        error = e.toAuthMessage(appStrings, R.string.tickets_error_load),
                     )
                 }
             }
@@ -118,7 +121,7 @@ class TicketsViewModel @Inject constructor(
     fun applyFilters() {
         val state = _uiState.value
         if (!state.filters.hasAnyField(state.isAdmin)) {
-            _uiState.update { it.copy(error = "Заполните хотя бы одно поле фильтра") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.tickets_filter_required)) }
             return
         }
         _uiState.update {

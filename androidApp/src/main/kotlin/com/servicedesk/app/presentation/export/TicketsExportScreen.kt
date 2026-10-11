@@ -24,7 +24,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.servicedesk.app.presentation.analytics.openAnalyticsExcel
@@ -43,7 +45,11 @@ fun TicketsExportScreen(
     LaunchedEffect(uiState.exportedFile) {
         val file = uiState.exportedFile ?: return@LaunchedEffect
         runCatching { openAnalyticsExcel(context, file) }
-            .onFailure { snackbarHostState.showSnackbar("Файл сохранён: ${file.name}") }
+            .onFailure {
+                snackbarHostState.showSnackbar(
+                    context.getString(R.string.export_file_saved, file.name),
+                )
+            }
         viewModel.clearExportedFile()
     }
 
@@ -55,7 +61,7 @@ fun TicketsExportScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Выгрузка заявок") },
+                title = { Text(stringResource(R.string.export_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -72,7 +78,7 @@ fun TicketsExportScreen(
                 .padding(16.dp),
         ) {
             Text(
-                text = "В выгрузку попадают заявки с заполненным типом сервиса за выбранный период.",
+                text = stringResource(R.string.export_hint),
                 style = MaterialTheme.typography.bodyMedium,
                 color = OnSurfaceMuted,
             )
@@ -82,7 +88,7 @@ fun TicketsExportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
-                label = { Text("С") },
+                label = { Text(stringResource(R.string.date_from)) },
                 singleLine = true,
             )
             OutlinedTextField(
@@ -91,7 +97,7 @@ fun TicketsExportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
-                label = { Text("По") },
+                label = { Text(stringResource(R.string.date_to)) },
                 singleLine = true,
             )
             Button(
@@ -104,7 +110,7 @@ fun TicketsExportScreen(
                 if (uiState.loading) {
                     CircularProgressIndicator(strokeWidth = 2.dp)
                 } else {
-                    Text("Сформировать Excel")
+                    Text(stringResource(R.string.export_generate))
                 }
             }
         }

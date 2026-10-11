@@ -1,3 +1,181 @@
 <resources>
     <string name="app_name">Service desk</string>
+
+    <string name="action_retry">Повторить</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_sign_in">Войти</string>
+    <string name="action_sign_out">Выйти</string>
+    <string name="action_show">Показать</string>
+    <string name="action_excel">Excel</string>
+    <string name="action_back">Назад</string>
+    <string name="cd_back">Назад</string>
+
+    <string name="date_from">С</string>
+    <string name="date_to">По</string>
+    <string name="date_format_hint">ГГГГ-ММ-ДД</string>
+    <string name="date_range_invalid">Дата начала не может быть позже даты окончания</string>
+    <string name="date_format_invalid">Укажите даты в формате ГГГГ-ММ-ДД</string>
+
+    <string name="role_admin">Администратор</string>
+    <string name="role_agent">Оператор</string>
+
+    <string name="nav_tickets">Тикеты</string>
+    <string name="nav_dialogs">Диалоги</string>
+    <string name="nav_analytics">Аналитика</string>
+    <string name="nav_more">Ещё</string>
+
+    <string name="auth_title">Вход для сотрудника поддержки</string>
+    <string name="auth_email">Почта</string>
+    <string name="auth_email_placeholder">agent@service.desk</string>
+    <string name="auth_password">Пароль</string>
+    <string name="auth_validation">Заполните почту и пароль</string>
+    <string name="auth_error_sign_in">Не удалось войти</string>
+    <string name="auth_error_invalid_credentials">Неверная почта или пароль</string>
+    <string name="auth_error_email_taken">Этот email уже занят</string>
+
+    <string name="tickets_title">Тикеты</string>
+    <string name="tickets_search_hint">Поиск заявок</string>
+    <string name="tickets_channel_max">MAX</string>
+    <string name="tickets_chip_all">Все</string>
+    <string name="tickets_chip_primary">Первичный</string>
+    <string name="tickets_chip_in_work">В работе</string>
+    <string name="tickets_filters">Фильтры</string>
+    <string name="tickets_new">Новая заявка</string>
+    <string name="tickets_empty">Заявок пока нет</string>
+    <string name="ticket_client_fallback">Клиент</string>
+    <string name="ticket_assign_fallback">Назначить сотрудника</string>
+    <string name="tickets_error_load">Не удалось загрузить заявки</string>
+    <string name="tickets_filter_required">Заполните хотя бы одно поле фильтра</string>
+    <string name="tickets_filters_title">Фильтры заявок</string>
+    <string name="tickets_filter_date_from">Дата с (ГГГГ-ММ-ДД)</string>
+    <string name="tickets_filter_date_to">Дата по</string>
+    <string name="tickets_filter_tag">Тег (подстрока)</string>
+    <string name="tickets_filter_serial">Серийный номер</string>
+    <string name="tickets_filter_manager">ID исполнителя</string>
+    <string name="tickets_filter_apply">Применить</string>
+    <string name="tickets_filter_clear">Сбросить</string>
+
+    <string name="ticket_search_title">Поиск заявок</string>
+    <string name="ticket_search_hint">Имя, телефон, серийник, причина…</string>
+    <string name="ticket_search_action">Найти</string>
+    <string name="ticket_search_recent">Недавние запросы</string>
+    <string name="ticket_search_clear_history">Очистить историю</string>
+    <string name="ticket_search_idle">Введите запрос и нажмите «Найти»</string>
+
+    <string name="ticket_detail_title">Заявка #%1$d</string>
+    <string name="ticket_detail_edit">Правка</string>
+    <string name="ticket_detail_view">Просмотр</string>
+    <string name="ticket_detail_created">Создана: %1$s</string>
+    <string name="ticket_detail_saved">Сохранено</string>
+    <string name="ticket_detail_error_load">Не удалось загрузить заявку</string>
+    <string name="ticket_detail_error_save">Не удалось сохранить</string>
+
+    <string name="section_status">Статус</string>
+    <string name="section_contact">Контакт на заявке</string>
+    <string name="section_printer">Принтер</string>
+    <string name="section_delivery">Доставка и решение</string>
+    <string name="section_external_export">Выгрузка во внешнюю систему</string>
+    <string name="section_excel_fields">Поля Excel-выгрузки</string>
+
+    <string name="field_full_name">ФИО</string>
+    <string name="field_phone">Телефон</string>
+    <string name="field_reason">Причина</string>
+    <string name="field_printer_model">Модель</string>
+    <string name="field_serial">Серийный номер</string>
+    <string name="field_extra_serial">Доп. серийный номер</string>
+    <string name="field_tracking">Трек-номер</string>
+    <string name="field_delivery_address">Адрес доставки</string>
+    <string name="field_purchased_from">Где куплен</string>
+    <string name="field_sku">SKU</string>
+    <string name="field_delivery_cost">Стоимость доставки</string>
+    <string name="field_solution">Описание решения</string>
+    <string name="field_warranty_case">Гарантийный случай</string>
+    <string name="field_external_url">Ссылка</string>
+    <string name="field_service_type">Тип сервиса (repair/replacement)</string>
+    <string name="field_service_time">Дата обращения (ГГГГ-ММ-ДД)</string>
+    <string name="field_replenishment">Пополнение (Yes/No)</string>
+    <string name="field_service_solution">Service solution</string>
+    <string name="field_warranty_status">Warranty status</string>
+    <string name="field_qty_used">Qty used</string>
+    <string name="field_replacement_qty">Replacement qty</string>
+    <string name="field_replenishment_qty">Replenishment qty</string>
+    <string name="field_sku_remark">SKU remark</string>
+    <string name="field_order_id">Order ID</string>
+    <string name="field_product_type">Product type</string>
+    <string name="field_issue_type">Issue type</string>
+    <string name="field_sub_issue_type">Sub issue type</string>
+    <string name="field_third_issue_type">Third issue type</string>
+
+    <string name="create_ticket_title">Новая заявка</string>
+    <string name="create_ticket_user">Клиент</string>
+    <string name="create_ticket_reason">Причина обращения</string>
+    <string name="create_ticket_submit">Создать</string>
+    <string name="create_ticket_error_users">Не удалось загрузить клиентов</string>
+    <string name="create_ticket_error_create">Не удалось создать заявку</string>
+    <string name="create_ticket_select_user">Выберите клиента</string>
+
+    <string name="dialogs_empty">Диалогов пока нет</string>
+    <string name="dialogs_error_load">Не удалось загрузить диалоги</string>
+    <string name="dialogs_unread">%1$d непрочитанных</string>
+
+    <string name="chat_message_hint">Сообщение</string>
+    <string name="chat_load_older">Ранние сообщения</string>
+    <string name="chat_error_load">Не удалось загрузить чат</string>
+    <string name="chat_error_messages">Не удалось загрузить сообщения</string>
+    <string name="chat_error_send">Не удалось отправить</string>
+    <string name="chat_error_file_read">Не удалось прочитать файл</string>
+    <string name="chat_error_send_file">Не удалось отправить файл</string>
+    <string name="chat_error_retry">Не удалось повторить отправку</string>
+    <string name="chat_retry_send">Повторить отправку</string>
+    <string name="chat_ticket_title">Заявка #%1$d</string>
+    <string name="delivery_pending">Отправляется…</string>
+    <string name="delivery_delivered">Доставлено</string>
+    <string name="delivery_failed">Ошибка доставки</string>
+    <string name="media_video">Видео</string>
+    <string name="media_file">Файл</string>
+
+    <string name="analytics_title">Аналитика</string>
+    <string name="analytics_period">Период</string>
+    <string name="analytics_details">Детализация</string>
+    <string name="analytics_by_status">По статусам</string>
+    <string name="analytics_by_models">По моделям принтеров</string>
+    <string name="analytics_tickets_list">Список заявок</string>
+    <string name="analytics_idle">Выберите период и нажмите «Показать» или «Excel»</string>
+    <string name="analytics_statuses">Статусы</string>
+    <string name="analytics_models">Модели</string>
+    <string name="analytics_tickets">Заявки</string>
+    <string name="analytics_created">Создано: %1$d</string>
+    <string name="analytics_modified">Изменено: %1$d</string>
+    <string name="analytics_error_load">Ошибка загрузки</string>
+    <string name="analytics_error_excel">Не удалось скачать Excel</string>
+    <string name="analytics_file_cache">Файл: %1$s (кэш приложения)</string>
+    <string name="open_excel">Открыть Excel</string>
+
+    <string name="more_title">Ещё</string>
+    <string name="more_export">Выгрузка заявок</string>
+    <string name="more_export_subtitle">Excel за период для внешней системы</string>
+    <string name="more_staff">Сотрудники</string>
+    <string name="more_staff_subtitle">Список и регистрация</string>
+    <string name="more_language">Язык интерфейса</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_chinese">中文</string>
+
+    <string name="export_title">Выгрузка заявок</string>
+    <string name="export_hint">В выгрузку попадают заявки с заполненным типом сервиса за выбранный период.</string>
+    <string name="export_generate">Сформировать Excel</string>
+    <string name="export_error">Не удалось выгрузить</string>
+    <string name="export_file_saved">Файл сохранён: %1$s</string>
+    <string name="download_error">Не удалось скачать файл (%1$d)</string>
+    <string name="download_empty">Пустой ответ</string>
+
+    <string name="staff_title">Сотрудники</string>
+    <string name="staff_new">Новый сотрудник</string>
+    <string name="staff_first_name">Имя</string>
+    <string name="staff_last_name">Фамилия</string>
+    <string name="staff_register">Зарегистрировать</string>
+    <string name="staff_list">Список</string>
+    <string name="staff_added">Добавлен: %1$s</string>
+    <string name="staff_error_list">Не удалось загрузить список</string>
+    <string name="staff_error_register">Не удалось зарегистрировать</string>
+    <string name="staff_validation">Укажите email и пароль (не короче 6 символов)</string>
 </resources>

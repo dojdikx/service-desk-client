@@ -2,7 +2,9 @@ package com.servicedesk.app.presentation.staff
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.servicedesk.app.R
 import com.servicedesk.app.domain.staff.StaffAdminRepository
+import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.domain.staff.StaffMember
 import com.servicedesk.app.domain.staff.StaffRegisterRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +30,7 @@ data class StaffUiState(
 @HiltViewModel
 class StaffViewModel @Inject constructor(
     private val repository: StaffAdminRepository,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StaffUiState())
@@ -44,7 +47,7 @@ class StaffViewModel @Inject constructor(
                 .onSuccess { list -> _uiState.update { it.copy(loading = false, staff = list) } }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(loading = false, error = e.message ?: "Не удалось загрузить список")
+                        it.copy(loading = false, error = e.message ?: appStrings.get(R.string.staff_error_list))
                     }
                 }
         }
@@ -58,7 +61,7 @@ class StaffViewModel @Inject constructor(
     fun register() {
         val state = _uiState.value
         if (state.email.isBlank() || state.password.length < 6) {
-            _uiState.update { it.copy(error = "Укажите email и пароль (не короче 6 символов)") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.staff_validation)) }
             return
         }
         viewModelScope.launch {
@@ -81,14 +84,14 @@ class StaffViewModel @Inject constructor(
                             password = "",
                             firstName = "",
                             lastName = "",
-                            successMessage = "Добавлен: ${member.email}",
+                            successMessage = appStrings.get(R.string.staff_added, member.email),
                             staff = it.staff + member,
                         )
                     }
                 }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(registering = false, error = e.message ?: "Не удалось зарегистрировать")
+                        it.copy(registering = false, error = e.message ?: appStrings.get(R.string.staff_error_register))
                     }
                 }
         }

@@ -10,7 +10,9 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.servicedesk.app.MainRoutes
+import com.servicedesk.app.R
 
 @Composable
 fun MainBottomBar(
@@ -22,25 +24,25 @@ fun MainBottomBar(
             selected = currentRoute == MainRoutes.TICKETS,
             onClick = { onNavigate(MainRoutes.TICKETS) },
             icon = { Icon(Icons.Default.ConfirmationNumber, contentDescription = null) },
-            label = { Text("Тикеты") },
+            label = { Text(stringResource(R.string.nav_tickets)) },
         )
         NavigationBarItem(
             selected = currentRoute == MainRoutes.DIALOGS,
             onClick = { onNavigate(MainRoutes.DIALOGS) },
             icon = { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null) },
-            label = { Text("Диалоги") },
+            label = { Text(stringResource(R.string.nav_dialogs)) },
         )
         NavigationBarItem(
             selected = currentRoute == MainRoutes.ANALYTICS,
             onClick = { onNavigate(MainRoutes.ANALYTICS) },
             icon = { Icon(Icons.Default.Analytics, contentDescription = null) },
-            label = { Text("Аналитика") },
+            label = { Text(stringResource(R.string.nav_analytics)) },
         )
         NavigationBarItem(
             selected = currentRoute == MainRoutes.MORE,
             onClick = { onNavigate(MainRoutes.MORE) },
             icon = { Icon(Icons.Default.MoreHoriz, contentDescription = null) },
-            label = { Text("Ещё") },
+            label = { Text(stringResource(R.string.nav_more)) },
         )
     }
 }

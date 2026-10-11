@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.servicedesk.app.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -69,7 +71,7 @@ fun SignInScreen(
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = "Вход для сотрудника поддержки",
+                    text = stringResource(R.string.auth_title),
                     style = MaterialTheme.typography.bodyMedium,
                     color = OnSurfaceMuted,
                     textAlign = TextAlign.Center,
@@ -80,8 +82,8 @@ fun SignInScreen(
                 OutlinedTextField(
                     value = uiState.email,
                     onValueChange = viewModel::onEmailChange,
-                    label = { Text("Почта") },
-                    placeholder = { Text("agent@service.desk") },
+                    label = { Text(stringResource(R.string.auth_email)) },
+                    placeholder = { Text(stringResource(R.string.auth_email_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = !uiState.isLoading,
@@ -90,7 +92,7 @@ fun SignInScreen(
                 PasswordTextField(
                     value = uiState.password,
                     onValueChange = viewModel::onPasswordChange,
-                    label = "Пароль",
+                    label = stringResource(R.string.auth_password),
                     enabled = !uiState.isLoading,
                 )
 
@@ -122,7 +124,7 @@ fun SignInScreen(
                             strokeWidth = 2.dp,
                         )
                     } else {
-                        Text("Войти")
+                        Text(stringResource(R.string.action_sign_in))
                     }
                 }
             }

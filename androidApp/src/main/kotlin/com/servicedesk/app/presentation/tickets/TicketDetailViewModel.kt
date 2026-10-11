@@ -6,7 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.IssueTypesResponseDto
 import com.servicedesk.app.data.api.TicketColumnDto
 import com.servicedesk.app.data.api.TicketPatchRequestDto
+import com.servicedesk.app.R
 import com.servicedesk.app.domain.tickets.TicketsRepository
+import com.servicedesk.app.locale.AppStrings
+import com.servicedesk.app.locale.LocaleStore
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -66,6 +69,8 @@ data class TicketDetailUiState(
 class TicketDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val ticketsRepository: TicketsRepository,
+    private val localeStore: LocaleStore,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val ticketId: Int = savedStateHandle.get<Int>("ticketId")
@@ -85,7 +90,7 @@ class TicketDetailViewModel @Inject constructor(
             runCatching {
                 val ticket = ticketsRepository.getTicket(ticketId)
                 val columns = ticketsRepository.loadColumns().columns
-                val issueTypes = ticketsRepository.loadIssueTypes("ru")
+                val issueTypes = ticketsRepository.loadIssueTypes(localeStore.currentLanguage().apiLang)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -100,7 +105,7 @@ class TicketDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.toAuthMessage("Не удалось загрузить заявку"),
+                        error = e.toAuthMessage(appStrings, R.string.ticket_detail_error_load),
                     )
                 }
             }
@@ -169,7 +174,7 @@ class TicketDetailViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isSaving = false,
-                            error = e.toAuthMessage("Не удалось сохранить"),
+                            error = e.toAuthMessage(appStrings, R.string.ticket_detail_error_save),
                         )
                     }
                 }

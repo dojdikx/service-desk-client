@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.domain.analytics.AnalyticsQuery
 import com.servicedesk.app.domain.analytics.AnalyticsReport
+import com.servicedesk.app.R
 import com.servicedesk.app.domain.analytics.AnalyticsRepository
+import com.servicedesk.app.locale.AppStrings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -46,6 +48,7 @@ data class AnalyticsUiState(
 class AnalyticsViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
     @ApplicationContext private val context: Context,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AnalyticsUiState())
@@ -93,7 +96,7 @@ class AnalyticsViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             phase = AnalyticsPhase.ERROR,
-                            error = e.message ?: "Ошибка загрузки",
+                            error = e.message ?: appStrings.get(R.string.analytics_error_load),
                         )
                     }
                 }
@@ -113,7 +116,7 @@ class AnalyticsViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             excelLoading = false,
-                            excelError = e.message ?: "Не удалось скачать Excel",
+                            excelError = e.message ?: appStrings.get(R.string.analytics_error_excel),
                         )
                     }
                 }
@@ -132,7 +135,7 @@ class AnalyticsViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     phase = AnalyticsPhase.ERROR,
-                    error = "Укажите даты в формате ГГГГ-ММ-ДД",
+                    error = appStrings.get(R.string.date_format_invalid),
                 )
             }
             return null
@@ -141,7 +144,7 @@ class AnalyticsViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     phase = AnalyticsPhase.ERROR,
-                    error = "Дата начала не может быть позже даты окончания",
+                    error = appStrings.get(R.string.date_range_invalid),
                 )
             }
             return null

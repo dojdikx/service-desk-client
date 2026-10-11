@@ -22,7 +22,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.servicedesk.app.presentation.components.PasswordTextField
@@ -38,7 +40,7 @@ fun StaffScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Сотрудники") },
+                title = { Text(stringResource(R.string.staff_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -55,7 +57,7 @@ fun StaffScreen(
         ) {
             item {
                 Text(
-                    text = "Новый сотрудник",
+                    text = stringResource(R.string.staff_new),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(vertical = 8.dp),
                 )
@@ -76,7 +78,7 @@ fun StaffScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
-                    label = "Пароль",
+                    label = stringResource(R.string.auth_password),
                 )
             }
             item {
@@ -86,7 +88,7 @@ fun StaffScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
-                    label = { Text("Имя") },
+                    label = { Text(stringResource(R.string.staff_first_name)) },
                     singleLine = true,
                 )
             }
@@ -97,7 +99,7 @@ fun StaffScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
-                    label = { Text("Фамилия") },
+                    label = { Text(stringResource(R.string.staff_last_name)) },
                     singleLine = true,
                 )
             }
@@ -112,7 +114,7 @@ fun StaffScreen(
                     if (uiState.registering) {
                         CircularProgressIndicator(strokeWidth = 2.dp)
                     } else {
-                        Text("Зарегистрировать")
+                        Text(stringResource(R.string.staff_register))
                     }
                 }
             }
@@ -128,7 +130,7 @@ fun StaffScreen(
             }
             item {
                 Text(
-                    text = "Список",
+                    text = stringResource(R.string.staff_list),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                 )
@@ -149,7 +151,11 @@ fun StaffScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                             Text(
-                                text = if (member.role == "admin") "Администратор" else "Оператор",
+                                text = if (member.role == "admin") {
+                                    stringResource(R.string.role_admin)
+                                } else {
+                                    stringResource(R.string.role_agent)
+                                },
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }

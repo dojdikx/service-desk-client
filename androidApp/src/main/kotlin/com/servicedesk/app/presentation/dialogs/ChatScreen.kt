@@ -38,7 +38,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
@@ -104,7 +106,7 @@ fun ChatScreen(
                         value = uiState.draft,
                         onValueChange = viewModel::onDraftChange,
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("Сообщение") },
+                        placeholder = { Text(stringResource(R.string.chat_message_hint)) },
                         maxLines = 4,
                         shape = RoundedCornerShape(12.dp),
                     )
@@ -139,7 +141,7 @@ fun ChatScreen(
                 ) {
                     Text(uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                     TextButton(onClick = viewModel::loadInitial) {
-                        Text("Повторить")
+                        Text(stringResource(R.string.action_retry))
                     }
                 }
             }
@@ -164,7 +166,7 @@ fun ChatScreen(
                                     CircularProgressIndicator(Modifier.padding(8.dp))
                                 } else {
                                     TextButton(onClick = viewModel::loadOlder) {
-                                        Text("Ранние сообщения")
+                                        Text(stringResource(R.string.chat_load_older))
                                     }
                                 }
                             }
@@ -185,10 +187,11 @@ fun ChatScreen(
     }
 }
 
+@Composable
 private fun deliveryStatusLabel(raw: String): String = when (raw.lowercase()) {
-    "pending" -> "Отправляется…"
-    "delivered", "sent" -> "Доставлено"
-    "failed" -> "Ошибка доставки"
+    "pending" -> stringResource(R.string.delivery_pending)
+    "delivered", "sent" -> stringResource(R.string.delivery_delivered)
+    "failed" -> stringResource(R.string.delivery_failed)
     else -> raw
 }
 
@@ -237,7 +240,7 @@ private fun MessageBubble(
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
-                val status = message.deliveryStatus?.let(::deliveryStatusLabel)
+                val status = message.deliveryStatus?.let { deliveryStatusLabel(it) }
                 if (fromStaff && !status.isNullOrBlank()) {
                     Text(
                         text = status,
@@ -260,7 +263,7 @@ private fun MessageBubble(
                         enabled = retryEnabled,
                         modifier = Modifier.padding(top = 2.dp),
                     ) {
-                        Text("Повторить отправку", color = Color.White)
+                        Text(stringResource(R.string.chat_retry_send), color = Color.White)
                     }
                 }
             }

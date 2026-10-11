@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.domain.export.TicketsExportQuery
+import com.servicedesk.app.R
 import com.servicedesk.app.domain.export.TicketsExportRepository
+import com.servicedesk.app.locale.AppStrings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -29,6 +31,7 @@ data class TicketsExportUiState(
 class TicketsExportViewModel @Inject constructor(
     private val repository: TicketsExportRepository,
     @ApplicationContext private val context: Context,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TicketsExportUiState())
@@ -46,11 +49,11 @@ class TicketsExportViewModel @Inject constructor(
         val start = parseDate(_uiState.value.startDate)
         val end = parseDate(_uiState.value.endDate)
         if (start == null || end == null) {
-            _uiState.update { it.copy(error = "Укажите даты в формате ГГГГ-ММ-ДД") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.date_format_invalid)) }
             return
         }
         if (start > end) {
-            _uiState.update { it.copy(error = "Дата начала не может быть позже окончания") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.date_range_invalid)) }
             return
         }
         viewModelScope.launch {
@@ -65,7 +68,7 @@ class TicketsExportViewModel @Inject constructor(
                 .onSuccess { file -> _uiState.update { it.copy(loading = false, exportedFile = file) } }
                 .onFailure { e ->
                     _uiState.update {
-                        it.copy(loading = false, error = e.message ?: "Не удалось выгрузить")
+                        it.copy(loading = false, error = e.message ?: appStrings.get(R.string.export_error))
                     }
                 }
         }

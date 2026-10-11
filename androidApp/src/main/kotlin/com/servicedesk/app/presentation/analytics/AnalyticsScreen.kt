@@ -30,7 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,7 +50,9 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
         val file = uiState.excelFile ?: return@LaunchedEffect
         runCatching { openAnalyticsExcel(context, file) }
             .onFailure {
-                snackbarHostState.showSnackbar("Файл: ${file.name} (кэш приложения)")
+                snackbarHostState.showSnackbar(
+                    context.getString(R.string.analytics_file_cache, file.name),
+                )
             }
         viewModel.clearExcelFile()
     }
@@ -60,7 +64,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Аналитика") })
+            TopAppBar(title = { Text(stringResource(R.string.analytics_title)) })
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
@@ -73,7 +77,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
         ) {
             item {
                 Text(
-                    text = "Период",
+                    text = stringResource(R.string.analytics_period),
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
@@ -82,8 +86,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                     value = uiState.startDate,
                     onValueChange = viewModel::onStartDateChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("С") },
-                    placeholder = { Text("ГГГГ-ММ-ДД") },
+                    label = { Text(stringResource(R.string.date_from)) },
+                    placeholder = { Text(stringResource(R.string.date_format_hint)) },
                     singleLine = true,
                 )
             }
@@ -92,35 +96,35 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                     value = uiState.endDate,
                     onValueChange = viewModel::onEndDateChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("По") },
-                    placeholder = { Text("ГГГГ-ММ-ДД") },
+                    label = { Text(stringResource(R.string.date_to)) },
+                    placeholder = { Text(stringResource(R.string.date_format_hint)) },
                     singleLine = true,
                 )
             }
             item {
                 Text(
-                    text = "Детализация",
+                    text = stringResource(R.string.analytics_details),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
             item {
                 ToggleRow(
-                    label = "По статусам",
+                    label = stringResource(R.string.analytics_by_status),
                     checked = uiState.includeStatusBreakdown,
                     onCheckedChange = viewModel::onIncludeStatusChange,
                 )
             }
             item {
                 ToggleRow(
-                    label = "По моделям принтеров",
+                    label = stringResource(R.string.analytics_by_models),
                     checked = uiState.includePrinterModels,
                     onCheckedChange = viewModel::onIncludePrinterChange,
                 )
             }
             item {
                 ToggleRow(
-                    label = "Список заявок",
+                    label = stringResource(R.string.analytics_tickets_list),
                     checked = uiState.includeTickets,
                     onCheckedChange = viewModel::onIncludeTicketsChange,
                 )
@@ -135,7 +139,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                         modifier = Modifier.weight(1f),
                         enabled = uiState.phase != AnalyticsPhase.LOADING,
                     ) {
-                        Text("Показать")
+                        Text(stringResource(R.string.action_show))
                     }
                     OutlinedButton(
                         onClick = {
@@ -150,7 +154,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                                 strokeWidth = 2.dp,
                             )
                         } else {
-                            Text("Excel")
+                            Text(stringResource(R.string.action_excel))
                         }
                     }
                 }
@@ -179,7 +183,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                 if (report.statusBreakdown.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Статусы",
+                            text = stringResource(R.string.analytics_statuses),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(top = 8.dp),
                         )
@@ -191,7 +195,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                 if (report.printerModelBreakdown.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Модели",
+                            text = stringResource(R.string.analytics_models),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(top = 8.dp),
                         )
@@ -203,7 +207,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                 if (report.ticketsBreakdown.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Заявки",
+                            text = stringResource(R.string.analytics_tickets),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(top = 8.dp),
                         )
@@ -236,7 +240,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
             } else if (uiState.phase == AnalyticsPhase.IDLE) {
                 item {
                     Text(
-                        text = "Выберите период и нажмите «Показать» или «Excel»",
+                        text = stringResource(R.string.analytics_idle),
                         color = OnSurfaceMuted,
                         modifier = Modifier.padding(top = 8.dp),
                     )
@@ -270,11 +274,11 @@ private fun SummaryCard(report: AnalyticsReport) {
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                text = "Создано: ${report.ticketsCreated}",
+                text = stringResource(R.string.analytics_created, report.ticketsCreated),
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-                text = "Изменено: ${report.ticketsModified}",
+                text = stringResource(R.string.analytics_modified, report.ticketsModified),
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
@@ -304,5 +308,5 @@ fun openAnalyticsExcel(context: android.content.Context, file: java.io.File) {
         setDataAndType(uri, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
-    context.startActivity(Intent.createChooser(intent, "Открыть Excel"))
+    context.startActivity(Intent.createChooser(intent, context.getString(R.string.open_excel)))
 }

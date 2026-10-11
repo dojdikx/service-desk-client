@@ -1,0 +1,181 @@
+<resources>
+    <string name="app_name">Service desk</string>
+
+    <string name="action_retry">重试</string>
+    <string name="action_save">保存</string>
+    <string name="action_sign_in">登录</string>
+    <string name="action_sign_out">退出</string>
+    <string name="action_show">查看</string>
+    <string name="action_excel">Excel</string>
+    <string name="action_back">返回</string>
+    <string name="cd_back">返回</string>
+
+    <string name="date_from">起</string>
+    <string name="date_to">止</string>
+    <string name="date_format_hint">YYYY-MM-DD</string>
+    <string name="date_range_invalid">开始日期不能晚于结束日期</string>
+    <string name="date_format_invalid">请使用 YYYY-MM-DD 格式填写日期</string>
+
+    <string name="role_admin">管理员</string>
+    <string name="role_agent">客服</string>
+
+    <string name="nav_tickets">工单</string>
+    <string name="nav_dialogs">对话</string>
+    <string name="nav_analytics">分析</string>
+    <string name="nav_more">更多</string>
+
+    <string name="auth_title">客服登录</string>
+    <string name="auth_email">邮箱</string>
+    <string name="auth_email_placeholder">agent@service.desk</string>
+    <string name="auth_password">密码</string>
+    <string name="auth_validation">请填写邮箱和密码</string>
+    <string name="auth_error_sign_in">登录失败</string>
+    <string name="auth_error_invalid_credentials">邮箱或密码错误</string>
+    <string name="auth_error_email_taken">该邮箱已被使用</string>
+
+    <string name="tickets_title">工单</string>
+    <string name="tickets_search_hint">搜索工单</string>
+    <string name="tickets_channel_max">MAX</string>
+    <string name="tickets_chip_all">全部</string>
+    <string name="tickets_chip_primary">初次联系</string>
+    <string name="tickets_chip_in_work">处理中</string>
+    <string name="tickets_filters">筛选</string>
+    <string name="tickets_new">新建工单</string>
+    <string name="tickets_empty">暂无工单</string>
+    <string name="ticket_client_fallback">客户</string>
+    <string name="ticket_assign_fallback">指派员工</string>
+    <string name="tickets_error_load">无法加载工单</string>
+    <string name="tickets_filter_required">请至少填写一个筛选条件</string>
+    <string name="tickets_filters_title">工单筛选</string>
+    <string name="tickets_filter_date_from">开始日期 (YYYY-MM-DD)</string>
+    <string name="tickets_filter_date_to">结束日期</string>
+    <string name="tickets_filter_tag">标签（包含）</string>
+    <string name="tickets_filter_serial">序列号</string>
+    <string name="tickets_filter_manager">负责人 ID</string>
+    <string name="tickets_filter_apply">应用</string>
+    <string name="tickets_filter_clear">清除</string>
+
+    <string name="ticket_search_title">搜索工单</string>
+    <string name="ticket_search_hint">姓名、电话、序列号、原因…</string>
+    <string name="ticket_search_action">搜索</string>
+    <string name="ticket_search_recent">最近搜索</string>
+    <string name="ticket_search_clear_history">清除历史</string>
+    <string name="ticket_search_idle">输入关键词后点击「搜索」</string>
+
+    <string name="ticket_detail_title">工单 #%1$d</string>
+    <string name="ticket_detail_edit">编辑</string>
+    <string name="ticket_detail_view">查看</string>
+    <string name="ticket_detail_created">创建时间：%1$s</string>
+    <string name="ticket_detail_saved">已保存</string>
+    <string name="ticket_detail_error_load">无法加载工单</string>
+    <string name="ticket_detail_error_save">保存失败</string>
+
+    <string name="section_status">状态</string>
+    <string name="section_contact">工单联系人</string>
+    <string name="section_printer">打印机</string>
+    <string name="section_delivery">物流与处理</string>
+    <string name="section_external_export">外部系统导出</string>
+    <string name="section_excel_fields">Excel 导出字段</string>
+
+    <string name="field_full_name">姓名</string>
+    <string name="field_phone">电话</string>
+    <string name="field_reason">原因</string>
+    <string name="field_printer_model">型号</string>
+    <string name="field_serial">序列号</string>
+    <string name="field_extra_serial">附加序列号</string>
+    <string name="field_tracking">运单号</string>
+    <string name="field_delivery_address">收货地址</string>
+    <string name="field_purchased_from">购买渠道</string>
+    <string name="field_sku">SKU</string>
+    <string name="field_delivery_cost">运费</string>
+    <string name="field_solution">解决方案说明</string>
+    <string name="field_warranty_case">保修案例</string>
+    <string name="field_external_url">链接</string>
+    <string name="field_service_type">服务类型 (repair/replacement)</string>
+    <string name="field_service_time">服务日期 (YYYY-MM-DD)</string>
+    <string name="field_replenishment">补货 (Yes/No)</string>
+    <string name="field_service_solution">Service solution</string>
+    <string name="field_warranty_status">Warranty status</string>
+    <string name="field_qty_used">Qty used</string>
+    <string name="field_replacement_qty">Replacement qty</string>
+    <string name="field_replenishment_qty">Replenishment qty</string>
+    <string name="field_sku_remark">SKU remark</string>
+    <string name="field_order_id">Order ID</string>
+    <string name="field_product_type">Product type</string>
+    <string name="field_issue_type">Issue type</string>
+    <string name="field_sub_issue_type">Sub issue type</string>
+    <string name="field_third_issue_type">Third issue type</string>
+
+    <string name="create_ticket_title">新建工单</string>
+    <string name="create_ticket_user">客户</string>
+    <string name="create_ticket_reason">问题描述</string>
+    <string name="create_ticket_submit">创建</string>
+    <string name="create_ticket_error_users">无法加载客户列表</string>
+    <string name="create_ticket_error_create">创建工单失败</string>
+    <string name="create_ticket_select_user">请选择客户</string>
+
+    <string name="dialogs_empty">暂无对话</string>
+    <string name="dialogs_error_load">无法加载对话</string>
+    <string name="dialogs_unread">%1$d 条未读</string>
+
+    <string name="chat_message_hint">消息</string>
+    <string name="chat_load_older">更早的消息</string>
+    <string name="chat_error_load">无法加载聊天</string>
+    <string name="chat_error_messages">无法加载消息</string>
+    <string name="chat_error_send">发送失败</string>
+    <string name="chat_error_file_read">无法读取文件</string>
+    <string name="chat_error_send_file">文件发送失败</string>
+    <string name="chat_error_retry">重发失败</string>
+    <string name="chat_retry_send">重新发送</string>
+    <string name="chat_ticket_title">工单 #%1$d</string>
+    <string name="delivery_pending">发送中…</string>
+    <string name="delivery_delivered">已送达</string>
+    <string name="delivery_failed">送达失败</string>
+    <string name="media_video">视频</string>
+    <string name="media_file">文件</string>
+
+    <string name="analytics_title">分析</string>
+    <string name="analytics_period">时间段</string>
+    <string name="analytics_details">明细</string>
+    <string name="analytics_by_status">按状态</string>
+    <string name="analytics_by_models">按打印机型号</string>
+    <string name="analytics_tickets_list">工单列表</string>
+    <string name="analytics_idle">选择时间段后点击「查看」或「Excel」</string>
+    <string name="analytics_statuses">状态</string>
+    <string name="analytics_models">型号</string>
+    <string name="analytics_tickets">工单</string>
+    <string name="analytics_created">新建：%1$d</string>
+    <string name="analytics_modified">变更：%1$d</string>
+    <string name="analytics_error_load">加载失败</string>
+    <string name="analytics_error_excel">无法下载 Excel</string>
+    <string name="analytics_file_cache">文件：%1$s（应用缓存）</string>
+    <string name="open_excel">打开 Excel</string>
+
+    <string name="more_title">更多</string>
+    <string name="more_export">工单导出</string>
+    <string name="more_export_subtitle">按时间段导出 Excel</string>
+    <string name="more_staff">员工</string>
+    <string name="more_staff_subtitle">列表与注册</string>
+    <string name="more_language">界面语言</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_chinese">中文</string>
+
+    <string name="export_title">工单导出</string>
+    <string name="export_hint">导出所选时间段内已填写服务类型的工单。</string>
+    <string name="export_generate">生成 Excel</string>
+    <string name="export_error">导出失败</string>
+    <string name="export_file_saved">已保存：%1$s</string>
+    <string name="download_error">下载失败 (%1$d)</string>
+    <string name="download_empty">空响应</string>
+
+    <string name="staff_title">员工</string>
+    <string name="staff_new">新员工</string>
+    <string name="staff_first_name">名</string>
+    <string name="staff_last_name">姓</string>
+    <string name="staff_register">注册</string>
+    <string name="staff_list">列表</string>
+    <string name="staff_added">已添加：%1$s</string>
+    <string name="staff_error_list">无法加载列表</string>
+    <string name="staff_error_register">注册失败</string>
+    <string name="staff_validation">请填写邮箱和密码（至少 6 位）</string>
+</resources>

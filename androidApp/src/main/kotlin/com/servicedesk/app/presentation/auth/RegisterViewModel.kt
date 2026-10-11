@@ -2,7 +2,9 @@ package com.servicedesk.app.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.servicedesk.app.R
 import com.servicedesk.app.domain.auth.StaffAuthRepository
+import com.servicedesk.app.locale.AppStrings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,7 @@ data class RegisterUiState(
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val authRepository: StaffAuthRepository,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
@@ -69,7 +72,7 @@ class RegisterViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = e.toAuthMessage("Не удалось зарегистрироваться"),
+                            error = e.toAuthMessage(appStrings, R.string.staff_error_register),
                         )
                     }
                 }

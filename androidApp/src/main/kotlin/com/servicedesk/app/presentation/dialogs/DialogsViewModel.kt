@@ -7,6 +7,8 @@ import com.servicedesk.app.data.realtime.RealtimeEventTypes
 import com.servicedesk.app.data.realtime.StaffRealtimeService
 import com.servicedesk.app.domain.messages.MessagesRepository
 import com.servicedesk.app.domain.tickets.TicketsRepository
+import com.servicedesk.app.R
+import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -26,6 +28,7 @@ data class DialogsUiState(
 class DialogsViewModel @Inject constructor(
     private val messagesRepository: MessagesRepository,
     private val ticketsRepository: TicketsRepository,
+    private val appStrings: AppStrings,
     staffRealtimeService: StaffRealtimeService,
 ) : ViewModel() {
 
@@ -66,7 +69,7 @@ class DialogsViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoading = false, tickets = list) }
             }.onFailure { e ->
                 _uiState.update {
-                    it.copy(isLoading = false, error = e.toAuthMessage("Не удалось загрузить диалоги"))
+                    it.copy(isLoading = false, error = e.toAuthMessage(appStrings, R.string.dialogs_error_load))
                 }
             }
         }

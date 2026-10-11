@@ -39,7 +39,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,7 +90,7 @@ fun TicketsScreen(
             .padding(horizontal = 16.dp),
     ) {
         Text(
-            text = "Тикеты",
+            text = stringResource(R.string.tickets_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
@@ -103,11 +105,11 @@ fun TicketsScreen(
                 value = "",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Поиск заявок") },
+                placeholder = { Text(stringResource(R.string.tickets_search_hint)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     Text(
-                        text = "MAX",
+                        text = stringResource(R.string.tickets_channel_max),
                         color = OnSurfaceMuted,
                         modifier = Modifier.padding(end = 8.dp),
                     )
@@ -124,21 +126,21 @@ fun TicketsScreen(
         ) {
             item {
                 StatusChip(
-                    label = "Все",
+                    label = stringResource(R.string.tickets_chip_all),
                     selected = uiState.statusChip == TicketStatusChip.ALL,
                     onClick = { viewModel.onStatusChip(TicketStatusChip.ALL) },
                 )
             }
             item {
                 StatusChip(
-                    label = "Первичный",
+                    label = stringResource(R.string.tickets_chip_primary),
                     selected = uiState.statusChip == TicketStatusChip.PRIMARY,
                     onClick = { viewModel.onStatusChip(TicketStatusChip.PRIMARY) },
                 )
             }
             item {
                 StatusChip(
-                    label = "В работе",
+                    label = stringResource(R.string.tickets_chip_in_work),
                     selected = uiState.statusChip == TicketStatusChip.IN_WORK,
                     onClick = { viewModel.onStatusChip(TicketStatusChip.IN_WORK) },
                 )
@@ -147,7 +149,7 @@ fun TicketsScreen(
                 FilterChip(
                     selected = uiState.filters.isActive,
                     onClick = viewModel::openFiltersSheet,
-                    label = { Text("Фильтры") },
+                    label = { Text(stringResource(R.string.tickets_filters)) },
                 )
             }
         }
@@ -160,7 +162,7 @@ fun TicketsScreen(
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
             shape = RoundedCornerShape(12.dp),
         ) {
-            Text("Новая заявка")
+            Text(stringResource(R.string.tickets_new))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -179,7 +181,7 @@ fun TicketsScreen(
                 ) {
                     Text(uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                     Button(onClick = viewModel::refresh, modifier = Modifier.padding(top = 12.dp)) {
-                        Text("Повторить")
+                        Text(stringResource(R.string.action_retry))
                     }
                 }
             }
@@ -187,7 +189,7 @@ fun TicketsScreen(
             visible.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = "Заявок пока нет",
+                        text = stringResource(R.string.tickets_empty),
                         color = OnSurfaceMuted,
                     )
                 }
@@ -239,7 +241,7 @@ private fun TicketCard(ticket: TicketShortDto, showAssignee: Boolean, onClick: (
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = ticket.clientName ?: "Клиент",
+                            text = ticket.clientName ?: stringResource(R.string.ticket_client_fallback),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.weight(1f),
@@ -283,7 +285,7 @@ private fun TicketCard(ticket: TicketShortDto, showAssignee: Boolean, onClick: (
             )
             if (showAssignee) {
                 Text(
-                    text = ticket.assigneeName ?: "Назначить сотрудника",
+                    text = ticket.assigneeName ?: stringResource(R.string.ticket_assign_fallback),
                     modifier = Modifier
                         .padding(top = 10.dp)
                         .fillMaxWidth()

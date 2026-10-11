@@ -13,6 +13,8 @@ import com.servicedesk.app.data.realtime.TicketRealtimeSession
 import com.servicedesk.app.domain.messages.MessagesRepository
 import com.servicedesk.app.domain.messages.OutboundMessageMedia
 import com.servicedesk.app.domain.tickets.TicketsRepository
+import com.servicedesk.app.R
+import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -44,6 +46,7 @@ class ChatViewModel @Inject constructor(
     private val ticketsRepository: TicketsRepository,
     private val okHttpClient: OkHttpClient,
     private val tokenStore: TokenStore,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val ticketId: Int = savedStateHandle.get<Int>("ticketId")
@@ -126,7 +129,7 @@ class ChatViewModel @Inject constructor(
             runCatching {
                 val ticket = ticketsRepository.getTicket(ticketId)
                 val title = ticket.fullName?.trim()?.takeIf { it.isNotEmpty() }
-                    ?: "Заявка #$ticketId"
+                    ?: appStrings.get(R.string.chat_ticket_title, ticketId)
                 messagesRepository.markTicketRead(ticketId)
                 val messages = messagesRepository.preview(ticketId)
                 title to messages
@@ -140,7 +143,9 @@ class ChatViewModel @Inject constructor(
                     )
                 }
             }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, error = e.toAuthMessage("Не удалось загрузить чат")) }
+                _uiState.update {
+                    it.copy(isLoading = false, error = e.toAuthMessage(appStrings, R.string.chat_error_load))
+                }
             }
         }
     }
@@ -162,7 +167,9 @@ class ChatViewModel @Inject constructor(
                     )
                 }
             }.onFailure { e ->
-                _uiState.update { it.copy(isLoadingMore = false, error = e.toAuthMessage("Не удалось загрузить сообщения")) }
+                _uiState.update {
+                    it.copy(isLoadingMore = false, error = e.toAuthMessage(appStrings, R.string.chat_error_messages))
+                }
             }
         }
     }
@@ -177,7 +184,9 @@ class ChatViewModel @Inject constructor(
             }.onSuccess { response ->
                 appendOutgoingMessage(response, text, null)
             }.onFailure { e ->
-                _uiState.update { it.copy(isSending = false, error = e.toAuthMessage("Не удалось отправить")) }
+                _uiState.update {
+                    it.copy(isSending = false, error = e.toAuthMessage(appStrings, R.string.chat_error_send))
+                }
             }
         }
     }
@@ -190,7 +199,7 @@ class ChatViewModel @Inject constructor(
                 sendAttachment(bytes, name, mime)
             }.onFailure { e ->
                 _uiState.update {
-                    it.copy(error = e.toAuthMessage("Не удалось прочитать файл"))
+                    it.copy(error = e.toAuthMessage(appStrings, R.string.chat_error_file_read))
                 }
             }
         }
@@ -214,7 +223,9 @@ class ChatViewModel @Inject constructor(
             }.onSuccess { (response, media) ->
                 appendOutgoingMessage(response, _uiState.value.draft.trim(), media)
             }.onFailure { e ->
-                _uiState.update { it.copy(isSending = false, error = e.toAuthMessage("Не удалось отправить файл")) }
+                _uiState.update {
+                    it.copy(isSending = false, error = e.toAuthMessage(appStrings, R.string.chat_error_send_file))
+                }
             }
         }
     }
@@ -243,7 +254,7 @@ class ChatViewModel @Inject constructor(
                 }
             }.onFailure { e ->
                 _uiState.update {
-                    it.copy(isSending = false, error = e.toAuthMessage("Не удалось повторить отправку"))
+                    it.copy(isSending = false, error = e.toAuthMessage(appStrings, R.string.chat_error_retry))
                 }
             }
         }

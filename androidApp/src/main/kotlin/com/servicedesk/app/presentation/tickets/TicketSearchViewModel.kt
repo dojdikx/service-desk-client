@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.TicketShortDto
 import com.servicedesk.app.data.search.SearchHistoryStore
 import com.servicedesk.app.domain.tickets.TicketsRepository
+import com.servicedesk.app.R
+import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -35,6 +37,7 @@ data class TicketSearchUiState(
 class TicketSearchViewModel @Inject constructor(
     private val ticketsRepository: TicketsRepository,
     private val searchHistoryStore: SearchHistoryStore,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TicketSearchUiState())
@@ -97,7 +100,7 @@ class TicketSearchViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         phase = TicketSearchPhase.ERROR,
-                        error = e.toAuthMessage("Не удалось загрузить заявки"),
+                        error = e.toAuthMessage(appStrings, R.string.tickets_error_load),
                     )
                 }
             }

@@ -2,7 +2,9 @@ package com.servicedesk.app.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.servicedesk.app.R
 import com.servicedesk.app.domain.auth.StaffAuthRepository
+import com.servicedesk.app.locale.AppStrings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +23,7 @@ data class SignInUiState(
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     private val authRepository: StaffAuthRepository,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignInUiState())
@@ -39,7 +42,7 @@ class SignInViewModel @Inject constructor(
         val email = state.email.trim()
         val password = state.password
         if (email.isBlank() || password.isBlank()) {
-            _uiState.update { it.copy(error = "Заполните почту и пароль") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.auth_validation)) }
             return
         }
         viewModelScope.launch {
@@ -53,7 +56,7 @@ class SignInViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = e.toAuthMessage("Не удалось войти"),
+                            error = e.toAuthMessage(appStrings, R.string.auth_error_sign_in),
                         )
                     }
                 }

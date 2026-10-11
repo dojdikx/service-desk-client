@@ -30,7 +30,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.servicedesk.app.data.api.IssueTypesResponseDto
@@ -47,7 +49,7 @@ fun TicketDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Заявка #${uiState.ticketId}") },
+                title = { Text(stringResource(R.string.ticket_detail_title, uiState.ticketId)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -56,7 +58,13 @@ fun TicketDetailScreen(
                 actions = {
                     if (!uiState.isLoading && uiState.error == null) {
                         TextButton(onClick = { viewModel.setEditing(!uiState.isEditing) }) {
-                            Text(if (uiState.isEditing) "Просмотр" else "Правка")
+                            Text(
+                                if (uiState.isEditing) {
+                                    stringResource(R.string.ticket_detail_view)
+                                } else {
+                                    stringResource(R.string.ticket_detail_edit)
+                                },
+                            )
                         }
                     }
                 },
@@ -69,7 +77,7 @@ fun TicketDetailScreen(
                 Column(Modifier.padding(padding).padding(16.dp)) {
                     Text(uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                     Button(onClick = viewModel::load, modifier = Modifier.padding(top = 8.dp)) {
-                        Text("Повторить")
+                        Text(stringResource(R.string.action_retry))
                     }
                 }
             }
@@ -83,19 +91,19 @@ fun TicketDetailScreen(
                         .padding(16.dp),
                 ) {
                     Text(
-                        text = "Создана: ${uiState.createdAt}",
+                        text = stringResource(R.string.ticket_detail_created, uiState.createdAt),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     if (uiState.saveSuccess) {
                         Text(
-                            text = "Сохранено",
+                            text = stringResource(R.string.ticket_detail_saved),
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(top = 4.dp),
                         )
                     }
 
-                    SectionTitle("Статус")
+                    SectionTitle(stringResource(R.string.section_status))
                     StatusField(
                         enabled = uiState.isEditing,
                         value = uiState.form.status,
@@ -103,73 +111,73 @@ fun TicketDetailScreen(
                         onChange = { viewModel.onFormChange(uiState.form.copy(status = it)) },
                     )
 
-                    SectionTitle("Контакт на заявке")
-                    FormField("ФИО", uiState.form.fullName, uiState.isEditing) {
+                    SectionTitle(stringResource(R.string.section_contact))
+                    FormField(stringResource(R.string.field_full_name), uiState.form.fullName, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(fullName = it))
                     }
-                    FormField("Телефон", uiState.form.contactPhone, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_phone), uiState.form.contactPhone, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(contactPhone = it))
                     }
-                    FormField("Причина", uiState.form.reason, uiState.isEditing, minLines = 3) {
+                    FormField(stringResource(R.string.field_reason), uiState.form.reason, uiState.isEditing, minLines = 3) {
                         viewModel.onFormChange(uiState.form.copy(reason = it))
                     }
 
-                    SectionTitle("Принтер")
-                    FormField("Модель", uiState.form.printerModel, uiState.isEditing) {
+                    SectionTitle(stringResource(R.string.section_printer))
+                    FormField(stringResource(R.string.field_printer_model), uiState.form.printerModel, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(printerModel = it))
                     }
-                    FormField("Серийный номер", uiState.form.serialNumber, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_serial), uiState.form.serialNumber, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(serialNumber = it))
                     }
-                    FormField("Доп. серийный номер", uiState.form.extraSerialNumber, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_extra_serial), uiState.form.extraSerialNumber, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(extraSerialNumber = it))
                     }
 
-                    SectionTitle("Доставка и решение")
-                    FormField("Трек-номер", uiState.form.trackingNumber, uiState.isEditing) {
+                    SectionTitle(stringResource(R.string.section_delivery))
+                    FormField(stringResource(R.string.field_tracking), uiState.form.trackingNumber, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(trackingNumber = it))
                     }
-                    FormField("Адрес доставки", uiState.form.deliveryAddress, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_delivery_address), uiState.form.deliveryAddress, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(deliveryAddress = it))
                     }
-                    FormField("Где куплен", uiState.form.purchasedFrom, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_purchased_from), uiState.form.purchasedFrom, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(purchasedFrom = it))
                     }
-                    FormField("SKU", uiState.form.sku, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_sku), uiState.form.sku, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(sku = it))
                     }
-                    FormField("Стоимость доставки", uiState.form.deliveryCost, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_delivery_cost), uiState.form.deliveryCost, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(deliveryCost = it))
                     }
-                    FormField("Описание решения", uiState.form.solutionDescription, uiState.isEditing, minLines = 2) {
+                    FormField(stringResource(R.string.field_solution), uiState.form.solutionDescription, uiState.isEditing, minLines = 2) {
                         viewModel.onFormChange(uiState.form.copy(solutionDescription = it))
                     }
                     RowSwitch(
-                        label = "Гарантийный случай",
+                        label = stringResource(R.string.field_warranty_case),
                         checked = uiState.form.warrantyCase,
                         enabled = uiState.isEditing,
                         onChecked = { viewModel.onFormChange(uiState.form.copy(warrantyCase = it)) },
                     )
 
-                    SectionTitle("Выгрузка во внешнюю систему")
-                    FormField("Ссылка", uiState.form.externalExportUrl, uiState.isEditing) {
+                    SectionTitle(stringResource(R.string.section_external_export))
+                    FormField(stringResource(R.string.field_external_url), uiState.form.externalExportUrl, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(externalExportUrl = it))
                     }
 
-                    SectionTitle("Поля Excel-выгрузки")
-                    FormField("Тип сервиса (repair/replacement)", uiState.form.serviceType, uiState.isEditing) {
+                    SectionTitle(stringResource(R.string.section_excel_fields))
+                    FormField(stringResource(R.string.field_service_type), uiState.form.serviceType, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(serviceType = it))
                     }
-                    FormField("Дата обращения (ГГГГ-ММ-ДД)", uiState.form.serviceTime, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_service_time), uiState.form.serviceTime, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(serviceTime = it))
                     }
-                    FormField("Пополнение (Yes/No)", uiState.form.replenishmentRequirement, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_replenishment), uiState.form.replenishmentRequirement, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(replenishmentRequirement = it))
                     }
-                    FormField("Service solution", uiState.form.serviceSolution, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_service_solution), uiState.form.serviceSolution, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(serviceSolution = it))
                     }
-                    FormField("Warranty status", uiState.form.warrantyStatus, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_warranty_status), uiState.form.warrantyStatus, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(warrantyStatus = it))
                     }
                     IssueTypeFields(
@@ -178,22 +186,22 @@ fun TicketDetailScreen(
                         enabled = uiState.isEditing,
                         onFormChange = viewModel::onFormChange,
                     )
-                    FormField("Qty used", uiState.form.qtyUsed, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_qty_used), uiState.form.qtyUsed, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(qtyUsed = it))
                     }
-                    FormField("Replacement qty", uiState.form.replacementQty, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_replacement_qty), uiState.form.replacementQty, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(replacementQty = it))
                     }
-                    FormField("Replenishment qty", uiState.form.replenishmentQty, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_replenishment_qty), uiState.form.replenishmentQty, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(replenishmentQty = it))
                     }
-                    FormField("SKU remark", uiState.form.skuRemark, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_sku_remark), uiState.form.skuRemark, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(skuRemark = it))
                     }
-                    FormField("Order ID", uiState.form.purchaseOrderId, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_order_id), uiState.form.purchaseOrderId, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(purchaseOrderId = it))
                     }
-                    FormField("Product type", uiState.form.productType, uiState.isEditing) {
+                    FormField(stringResource(R.string.field_product_type), uiState.form.productType, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(productType = it))
                     }
 
@@ -208,7 +216,7 @@ fun TicketDetailScreen(
                             if (uiState.isSaving) {
                                 CircularProgressIndicator()
                             } else {
-                                Text("Сохранить")
+                                Text(stringResource(R.string.action_save))
                             }
                         }
                     }
@@ -275,7 +283,7 @@ private fun StatusField(
     onChange: (String) -> Unit,
 ) {
     if (!enabled) {
-        FormField("Статус", value, false) {}
+        FormField(stringResource(R.string.section_status), value, false) {}
         return
     }
     var expanded by remember { mutableStateOf(false) }
@@ -284,7 +292,7 @@ private fun StatusField(
             value = value,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Статус") },
+            label = { Text(stringResource(R.string.section_status)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier
                 .menuAnchor()

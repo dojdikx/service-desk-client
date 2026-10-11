@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.UserShortDto
 import com.servicedesk.app.data.api.UsersApi
 import com.servicedesk.app.domain.tickets.TicketsRepository
+import com.servicedesk.app.R
+import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -28,6 +30,7 @@ data class CreateTicketUiState(
 class CreateTicketViewModel @Inject constructor(
     private val usersApi: UsersApi,
     private val ticketsRepository: TicketsRepository,
+    private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateTicketUiState())
@@ -45,7 +48,7 @@ class CreateTicketViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = e.toAuthMessage("Не удалось загрузить клиентов"),
+                            error = e.toAuthMessage(appStrings, R.string.create_ticket_error_users),
                         )
                     }
                 }
@@ -64,7 +67,7 @@ class CreateTicketViewModel @Inject constructor(
         val state = _uiState.value
         val userId = state.selectedUserId
         if (userId == null) {
-            _uiState.update { it.copy(error = "Выберите клиента") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.create_ticket_select_user)) }
             return
         }
         viewModelScope.launch {
@@ -82,7 +85,7 @@ class CreateTicketViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isSaving = false,
-                            error = e.toAuthMessage("Не удалось создать заявку"),
+                            error = e.toAuthMessage(appStrings, R.string.create_ticket_error_create),
                         )
                     }
                 }
