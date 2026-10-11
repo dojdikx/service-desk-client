@@ -7,6 +7,7 @@ interface MessagesRepository {
     suspend fun dialogTicketIds(): List<Int>
     suspend fun preview(ticketId: Int): List<MessageDto>
     suspend fun historyBefore(ticketId: Int, beforeId: Int, limit: Int = 30): List<MessageDto>
-    suspend fun send(ticketId: Int, text: String): SendMessageResponseDto
+    suspend fun send(ticketId: Int, text: String, media: OutboundMessageMedia? = null): SendMessageResponseDto
+    suspend fun uploadMedia(bytes: ByteArray, fileName: String, mimeType: String): UploadedMedia
     suspend fun markTicketRead(ticketId: Int)
 }

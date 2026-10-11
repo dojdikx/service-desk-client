@@ -26,12 +26,25 @@ interface MessagesApi {
 }
 
 @Serializable
+data class MediaItemDto(
+    val mediaType: String,
+    val mediaUrl: String,
+    val mediaFileName: String? = null,
+    val mediaCaption: String? = null,
+)
+
+@Serializable
 data class SendMessageRequestDto(
     val ticketId: Int,
-    val text: String,
+    val text: String = "",
     val replyToId: Int? = null,
     val quoteText: String? = null,
     val quoteOffset: Int? = null,
+    val mediaType: String? = null,
+    val mediaUrl: String? = null,
+    val mediaCaption: String? = null,
+    val mediaFileName: String? = null,
+    val mediaItems: List<MediaItemDto>? = null,
 )
 
 @Serializable
@@ -53,6 +66,7 @@ data class MessageDto(
     val mediaUrl: String? = null,
     val mediaCaption: String? = null,
     val mediaFileName: String? = null,
+    val mediaItems: List<MediaItemDto>? = null,
     val deliveryStatus: String? = null,
     val deliveryError: String? = null,
     val replyToId: Int? = null,

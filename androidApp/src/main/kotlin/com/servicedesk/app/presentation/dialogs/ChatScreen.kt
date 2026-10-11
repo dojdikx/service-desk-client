@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,18 +28,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.ImageLoader
 import com.servicedesk.app.data.api.MessageDto
+import com.servicedesk.app.data.media.MediaUrlResolver
+import com.servicedesk.app.di.ChatUiEntryPoint
 import com.servicedesk.app.ui.theme.OnSurfaceMuted
 import com.servicedesk.app.ui.theme.PrimaryBlue
+import dagger.hilt.android.EntryPointAccessors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,6 +57,15 @@ fun ChatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    val context = LocalContext.current
+    val chatUi = remember {
+        EntryPointAccessors.fromApplication(context.applicationContext, ChatUiEntryPoint::class.java)
+    }
+    val imageLoader = remember { chatUi.imageLoader() }
+    val mediaUrlResolver = remember { chatUi.mediaUrlResolver() }
+    val pickAttachment = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) viewModel.sendPickedFile(context, uri)
+    }
 
     LaunchedEffect(uiState.messages.size) {
         if (uiState.messages.isNotEmpty()) {
@@ -76,6 +94,12 @@ fun ChatScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
+                    IconButton(
+                        onClick = { pickAttachment.launch("*/*") },
+                        enabled = !uiState.isSending,
+                    ) {
+                        Icon(Icons.Default.AttachFile, contentDescription = null)
+                    }
                     OutlinedTextField(
                         value = uiState.draft,
                         onValueChange = viewModel::onDraftChange,
@@ -147,7 +171,11 @@ fun ChatScreen(
                         }
                     }
                     items(uiState.messages, key = { it.id }) { message ->
-                        MessageBubble(message = message)
+                        MessageBubble(
+                            message = message,
+                            imageLoader = imageLoader,
+                            mediaUrlResolver = mediaUrlResolver,
+                        )
                     }
                 }
             }
@@ -163,7 +191,11 @@ private fun deliveryStatusLabel(raw: String): String = when (raw.lowercase()) {
 }
 
 @Composable
-private fun MessageBubble(message: MessageDto) {
+private fun MessageBubble(
+    message: MessageDto,
+    imageLoader: ImageLoader,
+    mediaUrlResolver: MediaUrlResolver,
+) {
     val fromStaff = message.messageType == "backend"
     val bubbleColor = if (fromStaff) PrimaryBlue else Color.White
     val textColor = if (fromStaff) Color.White else Color(0xFF0F172A)
@@ -188,11 +220,19 @@ private fun MessageBubble(message: MessageDto) {
                         modifier = Modifier.padding(bottom = 6.dp),
                     )
                 }
-                Text(
-                    text = message.messageText,
-                    color = textColor,
-                    style = MaterialTheme.typography.bodyLarge,
+                MessageMediaContent(
+                    message = message,
+                    imageLoader = imageLoader,
+                    mediaUrlResolver = mediaUrlResolver,
+                    modifier = Modifier.padding(bottom = if (message.messageText.isNotBlank()) 8.dp else 0.dp),
                 )
+                if (message.messageText.isNotBlank()) {
+                    Text(
+                        text = message.messageText,
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
                 val status = message.deliveryStatus?.let(::deliveryStatusLabel)
                 if (fromStaff && !status.isNullOrBlank()) {
                     Text(

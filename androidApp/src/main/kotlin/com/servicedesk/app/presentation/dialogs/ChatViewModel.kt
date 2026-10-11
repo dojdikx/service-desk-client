@@ -1,10 +1,14 @@
 package com.servicedesk.app.presentation.dialogs
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.servicedesk.app.data.media.readUriBytes
 import com.servicedesk.app.data.api.MessageDto
 import com.servicedesk.app.domain.messages.MessagesRepository
+import com.servicedesk.app.domain.messages.OutboundMessageMedia
 import com.servicedesk.app.domain.tickets.TicketsRepository
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -137,24 +141,73 @@ class ChatViewModel @Inject constructor(
             runCatching {
                 messagesRepository.send(ticketId, text)
             }.onSuccess { response ->
-                val optimistic = MessageDto(
-                    id = response.messageId,
-                    ticketId = ticketId,
-                    messageText = response.text,
-                    messageType = "backend",
-                    timestamp = "",
-                    deliveryStatus = response.status,
-                )
-                _uiState.update {
-                    it.copy(
-                        isSending = false,
-                        draft = "",
-                        messages = it.messages + optimistic,
-                    )
-                }
+                appendOutgoingMessage(response, text, null)
             }.onFailure { e ->
                 _uiState.update { it.copy(isSending = false, error = e.toAuthMessage("Не удалось отправить")) }
             }
+        }
+    }
+
+    fun sendPickedFile(context: Context, uri: Uri) {
+        viewModelScope.launch {
+            runCatching {
+                context.readUriBytes(uri)
+            }.onSuccess { (bytes, name, mime) ->
+                sendAttachment(bytes, name, mime)
+            }.onFailure { e ->
+                _uiState.update {
+                    it.copy(error = e.toAuthMessage("Не удалось прочитать файл"))
+                }
+            }
+        }
+    }
+
+    fun sendAttachment(bytes: ByteArray, fileName: String, mimeType: String) {
+        if (_uiState.value.isSending) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSending = true, error = null) }
+            runCatching {
+                val uploaded = messagesRepository.uploadMedia(bytes, fileName, mimeType)
+                val caption = _uiState.value.draft.trim()
+                val media = OutboundMessageMedia(
+                    mediaType = uploaded.mediaType,
+                    mediaUrl = uploaded.mediaUrl,
+                    fileName = uploaded.fileName,
+                    caption = caption.takeIf { it.isNotEmpty() },
+                )
+                val response = messagesRepository.send(ticketId, caption, media)
+                response to media
+            }.onSuccess { (response, media) ->
+                appendOutgoingMessage(response, _uiState.value.draft.trim(), media)
+            }.onFailure { e ->
+                _uiState.update { it.copy(isSending = false, error = e.toAuthMessage("Не удалось отправить файл")) }
+            }
+        }
+    }
+
+    private fun appendOutgoingMessage(
+        response: com.servicedesk.app.data.api.SendMessageResponseDto,
+        text: String,
+        media: OutboundMessageMedia?,
+    ) {
+        val optimistic = MessageDto(
+            id = response.messageId,
+            ticketId = ticketId,
+            messageText = response.text.ifBlank { text },
+            messageType = "backend",
+            timestamp = "",
+            deliveryStatus = response.status,
+            mediaType = media?.mediaType,
+            mediaUrl = media?.mediaUrl,
+            mediaFileName = media?.fileName,
+            mediaCaption = media?.caption,
+        )
+        _uiState.update {
+            it.copy(
+                isSending = false,
+                draft = "",
+                messages = it.messages + optimistic,
+            )
         }
     }
 }
