@@ -155,6 +155,13 @@ fun ChatScreen(
     }
 }
 
+private fun deliveryStatusLabel(raw: String): String = when (raw.lowercase()) {
+    "pending" -> "Отправляется…"
+    "delivered", "sent" -> "Доставлено"
+    "failed" -> "Ошибка доставки"
+    else -> raw
+}
+
 @Composable
 private fun MessageBubble(message: MessageDto) {
     val fromStaff = message.messageType == "backend"
@@ -186,7 +193,7 @@ private fun MessageBubble(message: MessageDto) {
                     color = textColor,
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                val status = message.deliveryStatus
+                val status = message.deliveryStatus?.let(::deliveryStatusLabel)
                 if (fromStaff && !status.isNullOrBlank()) {
                     Text(
                         text = status,

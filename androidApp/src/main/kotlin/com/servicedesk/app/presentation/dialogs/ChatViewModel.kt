@@ -13,7 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 data class ChatUiState(
     val isLoading: Boolean = true,
@@ -42,7 +44,38 @@ class ChatViewModel @Inject constructor(
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
     init {
-        if (ticketId > 0) loadInitial()
+        if (ticketId > 0) {
+            loadInitial()
+            startMessagePolling()
+        }
+    }
+
+    private fun startMessagePolling() {
+        viewModelScope.launch {
+            delay(2_000)
+            while (isActive) {
+                syncLatestMessages()
+                delay(2_500)
+            }
+        }
+    }
+
+    private suspend fun syncLatestMessages() {
+        val state = _uiState.value
+        if (state.isLoading || state.error != null && state.messages.isEmpty()) return
+        runCatching {
+            messagesRepository.preview(ticketId)
+        }.onSuccess { preview ->
+            val merged = if (state.canLoadMore) {
+                mergePreviewWithExisting(state.messages, preview)
+            } else {
+                preview
+            }
+            if (hasMessageChanges(state.messages, merged)) {
+                messagesRepository.markTicketRead(ticketId)
+                _uiState.update { it.copy(messages = merged) }
+            }
+        }
     }
 
     fun onDraftChange(value: String) {

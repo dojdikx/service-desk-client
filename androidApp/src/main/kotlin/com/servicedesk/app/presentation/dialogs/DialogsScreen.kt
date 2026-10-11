@@ -21,7 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavController
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,10 +40,24 @@ import com.servicedesk.app.ui.theme.PrimaryBlue
 
 @Composable
 fun DialogsScreen(
+    navController: NavController,
     onOpenChat: (Int) -> Unit,
     viewModel: DialogsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val refreshFlow = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("dialogs_refresh", false)
+    LaunchedEffect(refreshFlow) {
+        refreshFlow?.collect { shouldRefresh ->
+            if (shouldRefresh) {
+                viewModel.refresh()
+                navController.currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.set("dialogs_refresh", false)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier

@@ -91,6 +91,7 @@ fun MainShell(sessionViewModel: SessionViewModel) {
             }
             composable(MainRoutes.DIALOGS) {
                 DialogsScreen(
+                    navController = navController,
                     onOpenChat = { id -> navController.navigate("dialogs/chat/$id") },
                 )
             }
@@ -98,7 +99,14 @@ fun MainShell(sessionViewModel: SessionViewModel) {
                 route = MainRoutes.CHAT,
                 arguments = listOf(navArgument("ticketId") { type = NavType.IntType }),
             ) {
-                ChatScreen(onBack = { navController.popBackStack() })
+                ChatScreen(
+                    onBack = {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("dialogs_refresh", true)
+                        navController.popBackStack()
+                    },
+                )
             }
             composable(MainRoutes.ANALYTICS) { AnalyticsPlaceholderScreen() }
             composable(MainRoutes.MORE) {
