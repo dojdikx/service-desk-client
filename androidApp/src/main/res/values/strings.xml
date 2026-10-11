@@ -203,7 +203,7 @@
     <string name="export_hint">В выгрузку попадают заявки с заполненным типом сервиса за выбранный период.</string>
     <string name="export_generate">Сформировать Excel</string>
     <string name="export_error">Не удалось выгрузить</string>
-    <string name="export_file_saved">Файл сохранён: %1$s</string>
+    <string name="export_file_saved">Файл загружен и сохранён:\n%1$s</string>
     <string name="download_error">Не удалось скачать файл (%1$d)</string>
     <string name="download_empty">Пустой ответ</string>
 

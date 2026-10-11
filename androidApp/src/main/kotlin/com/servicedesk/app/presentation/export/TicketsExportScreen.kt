@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.servicedesk.app.presentation.analytics.openAnalyticsExcel
 import com.servicedesk.app.ui.theme.OnSurfaceMuted
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,12 +43,7 @@ fun TicketsExportScreen(
 
     LaunchedEffect(uiState.exportedFile) {
         val file = uiState.exportedFile ?: return@LaunchedEffect
-        runCatching { openAnalyticsExcel(context, file) }
-            .onFailure {
-                snackbarHostState.showSnackbar(
-                    context.getString(R.string.export_file_saved, file.name),
-                )
-            }
+        snackbarHostState.showSnackbar(savedDownloadMessage(context, file))
         viewModel.clearExportedFile()
     }
 

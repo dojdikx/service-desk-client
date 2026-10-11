@@ -203,7 +203,7 @@
     <string name="export_hint">导出所选时间段内已填写服务类型的工单。</string>
     <string name="export_generate">生成 Excel</string>
     <string name="export_error">导出失败</string>
-    <string name="export_file_saved">已保存：%1$s</string>
+    <string name="export_file_saved">文件已下载并保存：\n%1$s</string>
     <string name="download_error">下载失败 (%1$d)</string>
     <string name="download_empty">空响应</string>
 

@@ -1,6 +1,5 @@
 package com.servicedesk.app.presentation.analytics
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,10 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.servicedesk.app.R
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.servicedesk.app.domain.analytics.AnalyticsReport
+import com.servicedesk.app.presentation.export.savedDownloadMessage
 import com.servicedesk.app.ui.theme.OnSurfaceMuted
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,12 +47,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
 
     LaunchedEffect(uiState.excelFile) {
         val file = uiState.excelFile ?: return@LaunchedEffect
-        runCatching { openAnalyticsExcel(context, file) }
-            .onFailure {
-                snackbarHostState.showSnackbar(
-                    context.getString(R.string.analytics_file_cache, file.name),
-                )
-            }
+        snackbarHostState.showSnackbar(savedDownloadMessage(context, file))
         viewModel.clearExcelFile()
     }
 
@@ -298,15 +292,3 @@ private fun BreakdownRow(title: String, count: Int) {
     }
 }
 
-fun openAnalyticsExcel(context: android.content.Context, file: java.io.File) {
-    val uri = FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.fileprovider",
-        file,
-    )
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(uri, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-    context.startActivity(Intent.createChooser(intent, context.getString(R.string.open_excel)))
-}
