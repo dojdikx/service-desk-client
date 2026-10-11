@@ -219,6 +219,36 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun retryMessage(messageId: Int) {
+        if (_uiState.value.isSending) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSending = true, error = null) }
+            runCatching {
+                messagesRepository.retryMessage(messageId)
+            }.onSuccess { response ->
+                _uiState.update { state ->
+                    state.copy(
+                        isSending = false,
+                        messages = state.messages.map { msg ->
+                            if (msg.id == messageId) {
+                                msg.copy(
+                                    deliveryStatus = response.status,
+                                    deliveryError = null,
+                                )
+                            } else {
+                                msg
+                            }
+                        },
+                    )
+                }
+            }.onFailure { e ->
+                _uiState.update {
+                    it.copy(isSending = false, error = e.toAuthMessage("Не удалось повторить отправку"))
+                }
+            }
+        }
+    }
+
     private fun appendOutgoingMessage(
         response: com.servicedesk.app.data.api.SendMessageResponseDto,
         text: String,

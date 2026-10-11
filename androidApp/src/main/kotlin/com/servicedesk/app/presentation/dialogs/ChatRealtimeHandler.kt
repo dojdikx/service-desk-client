@@ -24,7 +24,14 @@ internal fun applyRealtimeEvent(
             val messageId = event.messageId ?: return null
             val status = event.deliveryStatus ?: return null
             messages.map { msg ->
-                if (msg.id == messageId) msg.copy(deliveryStatus = status) else msg
+                if (msg.id == messageId) {
+                    msg.copy(
+                        deliveryStatus = status,
+                        deliveryError = event.deliveryError ?: msg.deliveryError,
+                    )
+                } else {
+                    msg
+                }
             }
         }
         else -> null

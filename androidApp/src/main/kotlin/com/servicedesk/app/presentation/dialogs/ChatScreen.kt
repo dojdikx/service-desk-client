@@ -175,6 +175,8 @@ fun ChatScreen(
                             message = message,
                             imageLoader = imageLoader,
                             mediaUrlResolver = mediaUrlResolver,
+                            onRetry = { viewModel.retryMessage(message.id) },
+                            retryEnabled = !uiState.isSending,
                         )
                     }
                 }
@@ -195,6 +197,8 @@ private fun MessageBubble(
     message: MessageDto,
     imageLoader: ImageLoader,
     mediaUrlResolver: MediaUrlResolver,
+    onRetry: () -> Unit,
+    retryEnabled: Boolean,
 ) {
     val fromStaff = message.messageType == "backend"
     val bubbleColor = if (fromStaff) PrimaryBlue else Color.White
@@ -241,6 +245,23 @@ private fun MessageBubble(
                         color = Color(0xFFE0E7FF),
                         modifier = Modifier.padding(top = 4.dp),
                     )
+                }
+                if (fromStaff && message.deliveryStatus == "failed") {
+                    message.deliveryError?.takeIf { it.isNotBlank() }?.let { err ->
+                        Text(
+                            text = err,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFFFFE4E6),
+                            modifier = Modifier.padding(top = 2.dp),
+                        )
+                    }
+                    TextButton(
+                        onClick = onRetry,
+                        enabled = retryEnabled,
+                        modifier = Modifier.padding(top = 2.dp),
+                    ) {
+                        Text("Повторить отправку", color = Color.White)
+                    }
                 }
             }
         }

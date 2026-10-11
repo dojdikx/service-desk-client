@@ -56,4 +56,7 @@ class ServerMessagesRepository @Inject constructor(
     override suspend fun markTicketRead(ticketId: Int) {
         ticketsApi.markRead(ticketId)
     }
+
+    override suspend fun retryMessage(messageId: Int): SendMessageResponseDto =
+        messagesApi.retry(messageId)
 }

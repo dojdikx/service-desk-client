@@ -30,6 +30,7 @@ internal fun hasMessageChanges(before: List<MessageDto>, after: List<MessageDto>
         val new = afterById[old.id] ?: return true
         old.messageText != new.messageText ||
             old.deliveryStatus != new.deliveryStatus ||
+            old.deliveryError != new.deliveryError ||
             old.messageType != new.messageType ||
             old.mediaUrl != new.mediaUrl ||
             old.mediaType != new.mediaType ||

@@ -23,6 +23,9 @@ interface MessagesApi {
 
     @POST("api/messages/send")
     suspend fun send(@Body body: SendMessageRequestDto): SendMessageResponseDto
+
+    @POST("api/messages/{messageId}/retry")
+    suspend fun retry(@Path("messageId") messageId: Int): SendMessageResponseDto
 }
 
 @Serializable

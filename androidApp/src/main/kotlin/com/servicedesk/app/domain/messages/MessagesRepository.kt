@@ -10,4 +10,5 @@ interface MessagesRepository {
     suspend fun send(ticketId: Int, text: String, media: OutboundMessageMedia? = null): SendMessageResponseDto
     suspend fun uploadMedia(bytes: ByteArray, fileName: String, mimeType: String): UploadedMedia
     suspend fun markTicketRead(ticketId: Int)
+    suspend fun retryMessage(messageId: Int): SendMessageResponseDto
 }
