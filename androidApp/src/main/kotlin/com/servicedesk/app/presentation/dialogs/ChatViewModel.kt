@@ -5,8 +5,11 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.servicedesk.app.data.auth.TokenStore
 import com.servicedesk.app.data.media.readUriBytes
 import com.servicedesk.app.data.api.MessageDto
+import com.servicedesk.app.data.realtime.RealtimeEventTypes
+import com.servicedesk.app.data.realtime.TicketRealtimeSession
 import com.servicedesk.app.domain.messages.MessagesRepository
 import com.servicedesk.app.domain.messages.OutboundMessageMedia
 import com.servicedesk.app.domain.tickets.TicketsRepository
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import okhttp3.OkHttpClient
 
 data class ChatUiState(
     val isLoading: Boolean = true,
@@ -38,6 +42,8 @@ class ChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val messagesRepository: MessagesRepository,
     private val ticketsRepository: TicketsRepository,
+    private val okHttpClient: OkHttpClient,
+    private val tokenStore: TokenStore,
 ) : ViewModel() {
 
     private val ticketId: Int = savedStateHandle.get<Int>("ticketId")
@@ -46,22 +52,50 @@ class ChatViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ChatUiState(ticketId = ticketId))
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+    private var ticketRealtime: TicketRealtimeSession? = null
 
     init {
         if (ticketId > 0) {
             loadInitial()
-            startMessagePolling()
+            startTicketRealtime()
+            startMessagePollingFallback()
         }
     }
 
-    private fun startMessagePolling() {
+    private fun startTicketRealtime() {
+        ticketRealtime = TicketRealtimeSession(
+            ticketId = ticketId,
+            okHttpClient = okHttpClient,
+            tokenStore = tokenStore,
+            onEvent = { event ->
+                viewModelScope.launch {
+                    val state = _uiState.value
+                    val updated = applyRealtimeEvent(state.messages, event, state.canLoadMore)
+                    if (updated != null) {
+                        if (event.type == RealtimeEventTypes.MESSAGE_NEW) {
+                            messagesRepository.markTicketRead(ticketId)
+                        }
+                        _uiState.update { it.copy(messages = updated) }
+                    }
+                }
+            },
+        ).also { it.start() }
+    }
+
+    private fun startMessagePollingFallback() {
         viewModelScope.launch {
-            delay(2_000)
+            delay(30_000)
             while (isActive) {
                 syncLatestMessages()
-                delay(2_500)
+                delay(30_000)
             }
         }
+    }
+
+    override fun onCleared() {
+        ticketRealtime?.stop()
+        ticketRealtime = null
+        super.onCleared()
     }
 
     private suspend fun syncLatestMessages() {

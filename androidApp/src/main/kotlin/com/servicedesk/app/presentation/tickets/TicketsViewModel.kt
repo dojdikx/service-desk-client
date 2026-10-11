@@ -6,6 +6,8 @@ import com.servicedesk.app.data.api.AuthApi
 import com.servicedesk.app.data.api.StaffApi
 import com.servicedesk.app.data.api.StaffBriefDto
 import com.servicedesk.app.data.api.TicketShortDto
+import com.servicedesk.app.data.realtime.RealtimeEventTypes
+import com.servicedesk.app.data.realtime.StaffRealtimeService
 import com.servicedesk.app.domain.tickets.TicketsRepository
 import com.servicedesk.app.presentation.auth.toAuthMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +40,7 @@ class TicketsViewModel @Inject constructor(
     private val ticketsRepository: TicketsRepository,
     private val authApi: AuthApi,
     private val staffApi: StaffApi,
+    staffRealtimeService: StaffRealtimeService,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TicketsUiState())
@@ -45,6 +48,20 @@ class TicketsViewModel @Inject constructor(
 
     init {
         refresh()
+        viewModelScope.launch {
+            staffRealtimeService.events.collect { event ->
+                if (event.type != RealtimeEventTypes.DIALOG_ACTIVITY) return@collect
+                val id = event.ticketId ?: return@collect
+                val unread = event.unreadCount ?: return@collect
+                _uiState.update { state ->
+                    state.copy(
+                        tickets = state.tickets.map { ticket ->
+                            if (ticket.ticketId == id) ticket.copy(unreadCount = unread) else ticket
+                        },
+                    )
+                }
+            }
+        }
     }
 
     fun refresh() {

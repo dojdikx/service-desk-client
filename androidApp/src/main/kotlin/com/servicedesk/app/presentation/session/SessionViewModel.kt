@@ -3,6 +3,7 @@ package com.servicedesk.app.presentation.session
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.auth.TokenStore
+import com.servicedesk.app.data.realtime.StaffRealtimeService
 import com.servicedesk.app.domain.auth.StaffAuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -21,6 +22,7 @@ enum class SessionStatus {
 class SessionViewModel @Inject constructor(
     private val tokenStore: TokenStore,
     private val authRepository: StaffAuthRepository,
+    private val staffRealtimeService: StaffRealtimeService,
 ) : ViewModel() {
 
     private val _status = MutableStateFlow(SessionStatus.Loading)
@@ -29,16 +31,18 @@ class SessionViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             tokenStore.load()
-            _status.value = if (tokenStore.cachedToken.isNullOrBlank()) {
-                SessionStatus.SignedOut
+            if (tokenStore.cachedToken.isNullOrBlank()) {
+                _status.value = SessionStatus.SignedOut
             } else {
-                SessionStatus.SignedIn
+                _status.value = SessionStatus.SignedIn
+                staffRealtimeService.start()
             }
         }
     }
 
     fun onSignedIn() {
         _status.value = SessionStatus.SignedIn
+        staffRealtimeService.start()
     }
 
     fun onSignedOut() {
@@ -47,6 +51,7 @@ class SessionViewModel @Inject constructor(
 
     fun signOut() {
         viewModelScope.launch {
+            staffRealtimeService.stop()
             runCatching { authRepository.signOut() }
             onSignedOut()
         }

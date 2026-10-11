@@ -3,6 +3,8 @@ package com.servicedesk.app.presentation.dialogs
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.TicketShortDto
+import com.servicedesk.app.data.realtime.RealtimeEventTypes
+import com.servicedesk.app.data.realtime.StaffRealtimeService
 import com.servicedesk.app.domain.messages.MessagesRepository
 import com.servicedesk.app.domain.tickets.TicketsRepository
 import com.servicedesk.app.presentation.auth.toAuthMessage
@@ -24,6 +26,7 @@ data class DialogsUiState(
 class DialogsViewModel @Inject constructor(
     private val messagesRepository: MessagesRepository,
     private val ticketsRepository: TicketsRepository,
+    staffRealtimeService: StaffRealtimeService,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DialogsUiState())
@@ -31,6 +34,20 @@ class DialogsViewModel @Inject constructor(
 
     init {
         refresh()
+        viewModelScope.launch {
+            staffRealtimeService.events.collect { event ->
+                if (event.type != RealtimeEventTypes.DIALOG_ACTIVITY) return@collect
+                val id = event.ticketId ?: return@collect
+                val unread = event.unreadCount ?: return@collect
+                _uiState.update { state ->
+                    state.copy(
+                        tickets = state.tickets.map { ticket ->
+                            if (ticket.ticketId == id) ticket.copy(unreadCount = unread) else ticket
+                        },
+                    )
+                }
+            }
+        }
     }
 
     fun refresh() {
