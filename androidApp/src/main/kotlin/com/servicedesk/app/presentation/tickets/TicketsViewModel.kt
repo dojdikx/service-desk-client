@@ -3,6 +3,7 @@ package com.servicedesk.app.presentation.tickets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.AuthApi
+import com.servicedesk.app.data.staff.StaffDirectoryRefreshBus
 import com.servicedesk.app.data.api.StaffApi
 import com.servicedesk.app.data.api.StaffBriefDto
 import com.servicedesk.app.data.api.TicketColumnDto
@@ -46,6 +47,7 @@ class TicketsViewModel @Inject constructor(
     private val staffApi: StaffApi,
     private val appStrings: AppStrings,
     staffRealtimeService: StaffRealtimeService,
+    staffDirectoryRefreshBus: StaffDirectoryRefreshBus,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TicketsUiState())
@@ -53,6 +55,9 @@ class TicketsViewModel @Inject constructor(
 
     init {
         refresh()
+        viewModelScope.launch {
+            staffDirectoryRefreshBus.updates.collect { refreshStaffList() }
+        }
         viewModelScope.launch {
             staffRealtimeService.events.collect { event ->
                 if (event.type != RealtimeEventTypes.DIALOG_ACTIVITY) return@collect
@@ -65,6 +70,17 @@ class TicketsViewModel @Inject constructor(
                         },
                     )
                 }
+            }
+        }
+    }
+
+    fun refreshStaffList() {
+        viewModelScope.launch {
+            val isAdmin = _uiState.value.isAdmin ||
+                runCatching { authApi.me().staff.role == "admin" }.getOrDefault(false)
+            if (!isAdmin) return@launch
+            runCatching { staffApi.list().staff }.onSuccess { staff ->
+                _uiState.update { it.copy(staff = staff, isAdmin = true) }
             }
         }
     }

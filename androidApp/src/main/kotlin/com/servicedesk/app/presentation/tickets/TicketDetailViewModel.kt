@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.AuthApi
+import com.servicedesk.app.data.staff.StaffDirectoryRefreshBus
 import com.servicedesk.app.data.api.IssueTypesResponseDto
 import com.servicedesk.app.data.api.StaffApi
 import com.servicedesk.app.data.api.StaffBriefDto
@@ -82,6 +83,7 @@ class TicketDetailViewModel @Inject constructor(
     private val staffApi: StaffApi,
     private val localeStore: LocaleStore,
     private val appStrings: AppStrings,
+    staffDirectoryRefreshBus: StaffDirectoryRefreshBus,
 ) : ViewModel() {
 
     private val ticketId: Int = savedStateHandle.get<Int>("ticketId")
@@ -93,6 +95,14 @@ class TicketDetailViewModel @Inject constructor(
 
     init {
         if (ticketId > 0) load()
+        viewModelScope.launch {
+            staffDirectoryRefreshBus.updates.collect {
+                if (!_uiState.value.isAdmin) return@collect
+                runCatching { staffApi.list().staff }.onSuccess { staff ->
+                    _uiState.update { state -> state.copy(staff = staff) }
+                }
+            }
+        }
     }
 
     fun load() {

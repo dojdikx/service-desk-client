@@ -129,7 +129,16 @@ fun MainShell(sessionViewModel: SessionViewModel) {
                 TicketsExportScreen(onBack = { navController.popBackStack() })
             }
             composable(MainRoutes.STAFF) {
-                StaffScreen(onBack = { navController.popBackStack() })
+                StaffScreen(
+                    onBack = {
+                        runCatching {
+                            navController.getBackStackEntry(MainRoutes.TICKETS)
+                                .savedStateHandle
+                                .set("tickets_refresh", true)
+                        }
+                        navController.popBackStack()
+                    },
+                )
             }
         }
     }

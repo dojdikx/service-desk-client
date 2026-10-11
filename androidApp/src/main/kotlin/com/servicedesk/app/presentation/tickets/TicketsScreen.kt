@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -42,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.servicedesk.app.R
+import com.servicedesk.app.locale.AppThemeMode
 import com.servicedesk.app.presentation.theme.ThemeSettingsViewModel
 import com.servicedesk.app.ui.theme.OnSurfaceMuted
 import com.servicedesk.app.ui.theme.PrimaryBlue
@@ -58,6 +60,12 @@ fun TicketsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val visible = viewModel.visibleTickets()
     val systemInDarkTheme = isSystemInDarkTheme()
+    val themeMode by themeViewModel.mode.collectAsStateWithLifecycle()
+    val isDarkTheme = when (themeMode) {
+        AppThemeMode.DARK -> true
+        AppThemeMode.LIGHT -> false
+        AppThemeMode.SYSTEM -> systemInDarkTheme
+    }
     val themeContentDescription = stringResource(R.string.more_theme)
     val refreshFlow = navController.currentBackStackEntry
         ?.savedStateHandle
@@ -102,9 +110,12 @@ fun TicketsScreen(
                 modifier = Modifier.weight(1f),
             )
             IconButton(
-                onClick = { themeViewModel.toggleLightDark(systemInDarkTheme) },
+                onClick = { themeViewModel.toggleLightDark(isDarkTheme) },
             ) {
-                Icon(Icons.Default.LightMode, contentDescription = themeContentDescription)
+                Icon(
+                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                    contentDescription = themeContentDescription,
+                )
             }
         }
 

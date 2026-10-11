@@ -3,6 +3,7 @@ package com.servicedesk.app.presentation.staff
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.R
+import com.servicedesk.app.data.staff.StaffDirectoryRefreshBus
 import com.servicedesk.app.domain.staff.StaffAdminRepository
 import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.domain.staff.StaffMember
@@ -31,6 +32,7 @@ data class StaffUiState(
 class StaffViewModel @Inject constructor(
     private val repository: StaffAdminRepository,
     private val appStrings: AppStrings,
+    private val staffDirectoryRefreshBus: StaffDirectoryRefreshBus,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StaffUiState())
@@ -77,6 +79,7 @@ class StaffViewModel @Inject constructor(
                 )
             }
                 .onSuccess { member ->
+                    staffDirectoryRefreshBus.notifyUpdated()
                     _uiState.update {
                         it.copy(
                             registering = false,
