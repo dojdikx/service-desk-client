@@ -1,8 +1,10 @@
 package com.servicedesk.app.data.tickets
 
 import com.servicedesk.app.data.api.TicketColumnsResponseDto
+import com.servicedesk.app.data.api.IssueTypesResponseDto
 import com.servicedesk.app.data.api.TicketCreateRequestDto
 import com.servicedesk.app.data.api.TicketDetailDto
+import com.servicedesk.app.data.api.TicketPatchRequestDto
 import com.servicedesk.app.data.api.TicketShortDto
 import com.servicedesk.app.data.api.TicketsApi
 import com.servicedesk.app.domain.tickets.TicketFilterQuery
@@ -30,4 +32,12 @@ class ServerTicketsRepository @Inject constructor(
 
     override suspend fun createTicket(userId: Int, reason: String?): TicketDetailDto =
         ticketsApi.create(TicketCreateRequestDto(userId = userId, reason = reason))
+
+    override suspend fun getTicket(id: Int): TicketDetailDto = ticketsApi.get(id)
+
+    override suspend fun patchTicket(id: Int, body: TicketPatchRequestDto): TicketDetailDto =
+        ticketsApi.patch(id, body)
+
+    override suspend fun loadIssueTypes(lang: String): IssueTypesResponseDto =
+        ticketsApi.issueTypes(lang)
 }
