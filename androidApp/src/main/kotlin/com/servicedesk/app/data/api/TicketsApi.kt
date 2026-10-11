@@ -38,7 +38,15 @@ interface TicketsApi {
 
     @POST("api/tickets/{id}/read")
     suspend fun markRead(@Path("id") id: Int)
+
+    @POST("api/tickets/{id}/assign")
+    suspend fun assign(@Path("id") id: Int, @Body body: AssignTicketRequestDto): TicketDetailDto
 }
+
+@Serializable
+data class AssignTicketRequestDto(
+    val managerId: Int,
+)
 
 @Serializable
 data class TicketColumnDto(

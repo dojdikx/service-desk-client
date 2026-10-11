@@ -44,6 +44,10 @@
     <string name="tickets_empty">Заявок пока нет</string>
     <string name="ticket_client_fallback">Клиент</string>
     <string name="ticket_assign_fallback">Назначить сотрудника</string>
+    <string name="ticket_detail_assignee">Исполнитель</string>
+    <string name="ticket_assign_success">Исполнитель назначен</string>
+    <string name="ticket_assign_error">Не удалось назначить исполнителя</string>
+    <string name="ticket_kanban_count">%1$d</string>
     <string name="tickets_error_load">Не удалось загрузить заявки</string>
     <string name="tickets_filter_required">Заполните хотя бы одно поле фильтра</string>
     <string name="tickets_filters_title">Фильтры заявок</string>
@@ -147,6 +151,8 @@
     <string name="placeholder_analytics_subtitle">Отчёты за период</string>
     <string name="placeholder_more_subtitle">Выгрузка, сотрудники, тема</string>
 
+    <string name="chat_replying_to">Ответ на: %1$s</string>
+    <string name="chat_reply_cancel">Отменить ответ</string>
     <string name="chat_message_hint">Сообщение</string>
     <string name="chat_load_older">Ранние сообщения</string>
     <string name="chat_error_load">Не удалось загрузить чат</string>
@@ -185,6 +191,10 @@
     <string name="more_export_subtitle">Excel за период для внешней системы</string>
     <string name="more_staff">Сотрудники</string>
     <string name="more_staff_subtitle">Список и регистрация</string>
+    <string name="more_theme">Тема</string>
+    <string name="theme_system">Как в системе</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
     <string name="more_language">Язык интерфейса</string>
     <string name="language_russian">Русский</string>
     <string name="language_chinese">中文</string>

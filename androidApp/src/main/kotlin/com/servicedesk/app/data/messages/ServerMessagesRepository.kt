@@ -30,11 +30,19 @@ class ServerMessagesRepository @Inject constructor(
     override suspend fun historyBefore(ticketId: Int, beforeId: Int, limit: Int): List<MessageDto> =
         messagesApi.history(ticketId, beforeId, limit).messages
 
-    override suspend fun send(ticketId: Int, text: String, media: OutboundMessageMedia?): SendMessageResponseDto =
+    override suspend fun send(
+        ticketId: Int,
+        text: String,
+        media: OutboundMessageMedia?,
+        replyToId: Int?,
+        quoteText: String?,
+    ): SendMessageResponseDto =
         messagesApi.send(
             SendMessageRequestDto(
                 ticketId = ticketId,
                 text = text,
+                replyToId = replyToId,
+                quoteText = quoteText,
                 mediaType = media?.mediaType,
                 mediaUrl = media?.mediaUrl,
                 mediaFileName = media?.fileName,

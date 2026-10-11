@@ -23,4 +23,5 @@ interface TicketsRepository {
     suspend fun getTicket(id: Int): TicketDetailDto
     suspend fun patchTicket(id: Int, body: TicketPatchRequestDto): TicketDetailDto
     suspend fun loadIssueTypes(lang: String = "ru"): IssueTypesResponseDto
+    suspend fun assignTicket(ticketId: Int, managerId: Int): TicketDetailDto
 }

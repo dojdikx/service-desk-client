@@ -111,6 +111,25 @@ fun TicketDetailScreen(
                         onChange = { viewModel.onFormChange(uiState.form.copy(status = it)) },
                     )
 
+                    if (uiState.isAdmin) {
+                        SectionTitle(stringResource(R.string.ticket_detail_assignee))
+                        AssigneeField(
+                            staff = uiState.staff,
+                            selectedId = uiState.assignedTo,
+                            selectedLabel = uiState.assigneeLabel,
+                            isAssigning = uiState.isAssigning,
+                            onAssign = viewModel::assign,
+                        )
+                        if (uiState.assignSuccess) {
+                            Text(
+                                text = stringResource(R.string.ticket_assign_success),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
+                        }
+                    }
+
                     SectionTitle(stringResource(R.string.section_contact))
                     FormField(stringResource(R.string.field_full_name), uiState.form.fullName, uiState.isEditing) {
                         viewModel.onFormChange(uiState.form.copy(fullName = it))
@@ -398,4 +417,51 @@ private fun issueLabel(value: String, labels: Map<String, String>): String {
     if (value.isBlank()) return ""
     val key = value.lowercase().replace("[^a-z0-9]+".toRegex(), "_").trim('_')
     return labels[key] ?: value
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AssigneeField(
+    staff: List<com.servicedesk.app.data.api.StaffBriefDto>,
+    selectedId: Int?,
+    selectedLabel: String?,
+    isAssigning: Boolean,
+    onAssign: (Int) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val display = selectedLabel ?: stringResource(R.string.ticket_assign_fallback)
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { if (!isAssigning && staff.isNotEmpty()) expanded = !expanded },
+        modifier = Modifier.padding(bottom = 8.dp),
+    ) {
+        OutlinedTextField(
+            value = display,
+            onValueChange = {},
+            readOnly = true,
+            enabled = !isAssigning && staff.isNotEmpty(),
+            label = { Text(stringResource(R.string.ticket_detail_assignee)) },
+            trailingIcon = {
+                if (isAssigning) {
+                    CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp))
+                } else {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                }
+            },
+            modifier = Modifier.menuAnchor().fillMaxWidth(),
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            staff.forEach { member ->
+                DropdownMenuItem(
+                    text = { Text(member.displayName()) },
+                    onClick = {
+                        if (member.id != selectedId) {
+                            onAssign(member.id)
+                        }
+                        expanded = false
+                    },
+                )
+            }
+        }
+    }
 }

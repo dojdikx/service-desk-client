@@ -27,6 +27,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 
+data class ChatReplyTarget(
+    val messageId: Int,
+    val preview: String,
+)
+
 data class ChatUiState(
     val isLoading: Boolean = true,
     val isLoadingMore: Boolean = false,
@@ -35,6 +40,7 @@ data class ChatUiState(
     val title: String = "",
     val messages: List<MessageDto> = emptyList(),
     val draft: String = "",
+    val replyTarget: ChatReplyTarget? = null,
     val error: String? = null,
     val canLoadMore: Boolean = true,
 )
@@ -174,15 +180,36 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun setReplyTarget(message: MessageDto) {
+        val preview = message.messageText.trim().ifBlank {
+            message.mediaCaption?.trim() ?: message.mediaFileName ?: ""
+        }.take(120)
+        if (preview.isEmpty()) return
+        _uiState.update {
+            it.copy(replyTarget = ChatReplyTarget(messageId = message.id, preview = preview))
+        }
+    }
+
+    fun clearReplyTarget() {
+        _uiState.update { it.copy(replyTarget = null) }
+    }
+
     fun send() {
-        val text = _uiState.value.draft.trim()
-        if (text.isEmpty() || _uiState.value.isSending) return
+        val state = _uiState.value
+        val text = state.draft.trim()
+        if (text.isEmpty() || state.isSending) return
+        val reply = state.replyTarget
         viewModelScope.launch {
             _uiState.update { it.copy(isSending = true, error = null) }
             runCatching {
-                messagesRepository.send(ticketId, text)
+                messagesRepository.send(
+                    ticketId = ticketId,
+                    text = text,
+                    replyToId = reply?.messageId,
+                    quoteText = reply?.preview,
+                )
             }.onSuccess { response ->
-                appendOutgoingMessage(response, text, null)
+                appendOutgoingMessage(response, text, null, reply)
             }.onFailure { e ->
                 _uiState.update {
                     it.copy(isSending = false, error = e.toAuthMessage(appStrings, R.string.chat_error_send))
@@ -218,10 +245,17 @@ class ChatViewModel @Inject constructor(
                     fileName = uploaded.fileName,
                     caption = caption.takeIf { it.isNotEmpty() },
                 )
-                val response = messagesRepository.send(ticketId, caption, media)
+                val reply = _uiState.value.replyTarget
+                val response = messagesRepository.send(
+                    ticketId = ticketId,
+                    text = caption,
+                    media = media,
+                    replyToId = reply?.messageId,
+                    quoteText = reply?.preview,
+                )
                 response to media
             }.onSuccess { (response, media) ->
-                appendOutgoingMessage(response, _uiState.value.draft.trim(), media)
+                appendOutgoingMessage(response, _uiState.value.draft.trim(), media, _uiState.value.replyTarget)
             }.onFailure { e ->
                 _uiState.update {
                     it.copy(isSending = false, error = e.toAuthMessage(appStrings, R.string.chat_error_send_file))
@@ -264,6 +298,7 @@ class ChatViewModel @Inject constructor(
         response: com.servicedesk.app.data.api.SendMessageResponseDto,
         text: String,
         media: OutboundMessageMedia?,
+        reply: ChatReplyTarget?,
     ) {
         val optimistic = MessageDto(
             id = response.messageId,
@@ -276,11 +311,14 @@ class ChatViewModel @Inject constructor(
             mediaUrl = media?.mediaUrl,
             mediaFileName = media?.fileName,
             mediaCaption = media?.caption,
+            replyToId = reply?.messageId,
+            quoteText = reply?.preview,
         )
         _uiState.update {
             it.copy(
                 isSending = false,
                 draft = "",
+                replyTarget = null,
                 messages = it.messages + optimistic,
             )
         }

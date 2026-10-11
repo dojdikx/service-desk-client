@@ -1,6 +1,7 @@
 package com.servicedesk.app.presentation.dialogs
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -88,10 +90,33 @@ fun ChatScreen(
         },
         bottomBar = {
             if (!uiState.isLoading && uiState.error == null) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .imePadding(),
+                ) {
+                    uiState.replyTarget?.let { reply ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.chat_replying_to, reply.preview),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.weight(1f),
+                                maxLines = 2,
+                            )
+                            TextButton(onClick = viewModel::clearReplyTarget) {
+                                Text(stringResource(R.string.chat_reply_cancel))
+                            }
+                        }
+                    }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .imePadding()
                         .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -120,6 +145,7 @@ fun ChatScreen(
                             Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null)
                         }
                     }
+                }
                 }
             }
         },
@@ -178,6 +204,7 @@ fun ChatScreen(
                             imageLoader = imageLoader,
                             mediaUrlResolver = mediaUrlResolver,
                             onRetry = { viewModel.retryMessage(message.id) },
+                            onReply = { viewModel.setReplyTarget(message) },
                             retryEnabled = !uiState.isSending,
                         )
                     }
@@ -195,12 +222,14 @@ private fun deliveryStatusLabel(raw: String): String = when (raw.lowercase()) {
     else -> raw
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MessageBubble(
     message: MessageDto,
     imageLoader: ImageLoader,
     mediaUrlResolver: MediaUrlResolver,
     onRetry: () -> Unit,
+    onReply: () -> Unit,
     retryEnabled: Boolean,
 ) {
     val fromStaff = message.messageType == "backend"
@@ -215,6 +244,7 @@ private fun MessageBubble(
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.85f)
+                .combinedClickable(onClick = {}, onLongClick = onReply)
                 .background(bubbleColor, RoundedCornerShape(16.dp))
                 .padding(horizontal = 14.dp, vertical = 10.dp),
         ) {

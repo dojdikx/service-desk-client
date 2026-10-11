@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.AuthApi
 import com.servicedesk.app.data.api.StaffApi
 import com.servicedesk.app.data.api.StaffBriefDto
+import com.servicedesk.app.data.api.TicketColumnDto
 import com.servicedesk.app.data.api.TicketShortDto
 import com.servicedesk.app.data.realtime.RealtimeEventTypes
 import com.servicedesk.app.data.realtime.StaffRealtimeService
@@ -20,16 +21,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-enum class TicketStatusChip {
-    ALL,
-    PRIMARY,
-    IN_WORK,
-}
-
 data class TicketsUiState(
     val isLoading: Boolean = true,
     val tickets: List<TicketShortDto> = emptyList(),
-    val statusChip: TicketStatusChip = TicketStatusChip.ALL,
+    val columns: List<TicketColumnDto> = emptyList(),
     val isAdmin: Boolean = false,
     val error: String? = null,
     val filters: TicketFiltersState = TicketFiltersState(),
@@ -78,6 +73,7 @@ class TicketsViewModel @Inject constructor(
                 } else {
                     emptyList()
                 }
+                val columns = ticketsRepository.loadColumns().columns
                 val tickets = if (_uiState.value.filters.isActive) {
                     ticketsRepository.filterTickets(_uiState.value.filters.toQuery())
                 } else {
@@ -87,6 +83,7 @@ class TicketsViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         tickets = tickets,
+                        columns = columns,
                         isAdmin = isAdmin,
                         staff = staff,
                     )
@@ -100,10 +97,6 @@ class TicketsViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun onStatusChip(chip: TicketStatusChip) {
-        _uiState.update { it.copy(statusChip = chip) }
     }
 
     fun openFiltersSheet() {
@@ -145,15 +138,10 @@ class TicketsViewModel @Inject constructor(
         refresh()
     }
 
-    fun visibleTickets(): List<TicketShortDto> {
+    fun kanbanColumns(): List<Pair<TicketColumnDto, List<TicketShortDto>>> {
         val state = _uiState.value
-        return state.tickets.filter { ticket -> matchesChip(ticket, state.statusChip) }
-    }
-
-    private fun matchesChip(ticket: TicketShortDto, chip: TicketStatusChip): Boolean =
-        when (chip) {
-            TicketStatusChip.ALL -> true
-            TicketStatusChip.PRIMARY -> ticket.status.contains("Первичный", ignoreCase = true)
-            TicketStatusChip.IN_WORK -> ticket.status.contains("В работе", ignoreCase = true)
+        return state.columns.map { column ->
+            column to state.tickets.filter { it.status == column.status }
         }
+    }
 }

@@ -71,7 +71,7 @@ fun TicketsScreen(
             }
         }
     }
-    val visible = viewModel.visibleTickets()
+    val kanban = viewModel.kanbanColumns()
 
     TicketFiltersSheet(
         visible = uiState.filtersSheetVisible,
@@ -120,38 +120,15 @@ fun TicketsScreen(
             )
         }
 
-        LazyRow(
+        Row(
             modifier = Modifier.padding(vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.End,
         ) {
-            item {
-                StatusChip(
-                    label = stringResource(R.string.tickets_chip_all),
-                    selected = uiState.statusChip == TicketStatusChip.ALL,
-                    onClick = { viewModel.onStatusChip(TicketStatusChip.ALL) },
-                )
-            }
-            item {
-                StatusChip(
-                    label = stringResource(R.string.tickets_chip_primary),
-                    selected = uiState.statusChip == TicketStatusChip.PRIMARY,
-                    onClick = { viewModel.onStatusChip(TicketStatusChip.PRIMARY) },
-                )
-            }
-            item {
-                StatusChip(
-                    label = stringResource(R.string.tickets_chip_in_work),
-                    selected = uiState.statusChip == TicketStatusChip.IN_WORK,
-                    onClick = { viewModel.onStatusChip(TicketStatusChip.IN_WORK) },
-                )
-            }
-            item {
-                FilterChip(
-                    selected = uiState.filters.isActive,
-                    onClick = viewModel::openFiltersSheet,
-                    label = { Text(stringResource(R.string.tickets_filters)) },
-                )
-            }
+            FilterChip(
+                selected = uiState.filters.isActive,
+                onClick = viewModel::openFiltersSheet,
+                label = { Text(stringResource(R.string.tickets_filters)) },
+            )
         }
 
         Button(
@@ -167,6 +144,7 @@ fun TicketsScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        Box(modifier = Modifier.weight(1f)) {
         when {
             uiState.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -186,7 +164,7 @@ fun TicketsScreen(
                 }
             }
 
-            visible.isEmpty() -> {
+            uiState.tickets.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = stringResource(R.string.tickets_empty),
@@ -196,124 +174,14 @@ fun TicketsScreen(
             }
 
             else -> {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 16.dp),
-                ) {
-                    items(visible, key = { it.ticketId }) { ticket ->
-                        TicketCard(
-                            ticket = ticket,
-                            showAssignee = uiState.isAdmin,
-                            onClick = { onOpenTicket(ticket.ticketId) },
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun StatusChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = { Text(label) },
-    )
-}
-
-@Composable
-private fun TicketCard(ticket: TicketShortDto, showAssignee: Boolean, onClick: () -> Unit) {
-    Surface(
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 1.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AvatarInitials(name = ticket.clientName ?: "?")
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 12.dp),
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = ticket.clientName ?: stringResource(R.string.ticket_client_fallback),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.weight(1f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        if (ticket.unreadCount > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .size(22.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFFEF4444)),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    text = ticket.unreadCount.toString(),
-                                    color = Color.White,
-                                    fontSize = 11.sp,
-                                )
-                            }
-                        }
-                    }
-                    Text(
-                        text = ticket.lastMessage ?: ticket.serialNumber ?: "—",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = OnSurfaceMuted,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
-            }
-            Text(
-                text = ticket.status,
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFFEF3C7))
-                    .padding(horizontal = 10.dp, vertical = 4.dp),
-                style = MaterialTheme.typography.labelMedium,
-            )
-            if (showAssignee) {
-                Text(
-                    text = ticket.assigneeName ?: stringResource(R.string.ticket_assign_fallback),
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFFEFF6FF))
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    color = if (ticket.assigneeName != null) PrimaryBlue else OnSurfaceMuted,
+                TicketsKanbanBoard(
+                    columns = kanban,
+                    showAssignee = uiState.isAdmin,
+                    onOpenTicket = onOpenTicket,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun AvatarInitials(name: String) {
-    val initials = name.split(" ")
-        .filter { it.isNotBlank() }
-        .take(2)
-        .map { it.first().uppercaseChar() }
-        .joinToString("")
-        .ifBlank { "?" }
-    Box(
-        modifier = Modifier
-            .size(44.dp)
-            .clip(CircleShape)
-            .background(Color(0xFFDBEAFE)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = initials, color = PrimaryBlue, fontWeight = FontWeight.Bold)
+        }
     }
 }

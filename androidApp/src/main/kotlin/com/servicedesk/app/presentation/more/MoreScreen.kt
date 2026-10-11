@@ -24,8 +24,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.servicedesk.app.R
 import com.servicedesk.app.locale.AppLanguage
+import com.servicedesk.app.locale.AppThemeMode
 import com.servicedesk.app.presentation.locale.LocaleSettingsViewModel
 import com.servicedesk.app.presentation.session.CurrentStaff
+import com.servicedesk.app.presentation.theme.ThemeSettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,8 +37,10 @@ fun MoreScreen(
     onOpenStaff: () -> Unit,
     onSignOut: () -> Unit,
     localeViewModel: LocaleSettingsViewModel = hiltViewModel(),
+    themeViewModel: ThemeSettingsViewModel = hiltViewModel(),
 ) {
     val language by localeViewModel.language.collectAsStateWithLifecycle()
+    val themeMode by themeViewModel.mode.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.more_title)) }) },
@@ -62,6 +66,35 @@ fun MoreScreen(
                     },
                 )
                 HorizontalDivider()
+            }
+
+            Text(
+                text = stringResource(R.string.more_theme),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 8.dp),
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            ) {
+                FilterChip(
+                    selected = themeMode == AppThemeMode.SYSTEM,
+                    onClick = { themeViewModel.setMode(AppThemeMode.SYSTEM) },
+                    label = { Text(stringResource(R.string.theme_system)) },
+                    modifier = Modifier.padding(end = 8.dp),
+                )
+                FilterChip(
+                    selected = themeMode == AppThemeMode.LIGHT,
+                    onClick = { themeViewModel.setMode(AppThemeMode.LIGHT) },
+                    label = { Text(stringResource(R.string.theme_light)) },
+                    modifier = Modifier.padding(end = 8.dp),
+                )
+                FilterChip(
+                    selected = themeMode == AppThemeMode.DARK,
+                    onClick = { themeViewModel.setMode(AppThemeMode.DARK) },
+                    label = { Text(stringResource(R.string.theme_dark)) },
+                )
             }
 
             Text(

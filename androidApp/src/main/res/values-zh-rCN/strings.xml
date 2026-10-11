@@ -44,6 +44,10 @@
     <string name="tickets_empty">暂无工单</string>
     <string name="ticket_client_fallback">客户</string>
     <string name="ticket_assign_fallback">指派员工</string>
+    <string name="ticket_detail_assignee">负责人</string>
+    <string name="ticket_assign_success">已指派负责人</string>
+    <string name="ticket_assign_error">指派失败</string>
+    <string name="ticket_kanban_count">%1$d</string>
     <string name="tickets_error_load">无法加载工单</string>
     <string name="tickets_filter_required">请至少填写一个筛选条件</string>
     <string name="tickets_filters_title">工单筛选</string>
@@ -147,6 +151,8 @@
     <string name="placeholder_analytics_subtitle">时间段报表</string>
     <string name="placeholder_more_subtitle">导出、员工、语言</string>
 
+    <string name="chat_replying_to">回复：%1$s</string>
+    <string name="chat_reply_cancel">取消回复</string>
     <string name="chat_message_hint">消息</string>
     <string name="chat_load_older">更早的消息</string>
     <string name="chat_error_load">无法加载聊天</string>
@@ -185,6 +191,10 @@
     <string name="more_export_subtitle">按时间段导出 Excel</string>
     <string name="more_staff">员工</string>
     <string name="more_staff_subtitle">列表与注册</string>
+    <string name="more_theme">主题</string>
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
     <string name="more_language">界面语言</string>
     <string name="language_russian">Русский</string>
     <string name="language_chinese">中文</string>

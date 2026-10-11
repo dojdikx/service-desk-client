@@ -2,6 +2,7 @@ package com.servicedesk.app.data.tickets
 
 import com.servicedesk.app.data.api.TicketColumnsResponseDto
 import com.servicedesk.app.data.api.IssueTypesResponseDto
+import com.servicedesk.app.data.api.AssignTicketRequestDto
 import com.servicedesk.app.data.api.TicketCreateRequestDto
 import com.servicedesk.app.data.api.TicketDetailDto
 import com.servicedesk.app.data.api.TicketPatchRequestDto
@@ -40,4 +41,7 @@ class ServerTicketsRepository @Inject constructor(
 
     override suspend fun loadIssueTypes(lang: String): IssueTypesResponseDto =
         ticketsApi.issueTypes(lang)
+
+    override suspend fun assignTicket(ticketId: Int, managerId: Int): TicketDetailDto =
+        ticketsApi.assign(ticketId, AssignTicketRequestDto(managerId = managerId))
 }

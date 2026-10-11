@@ -3,7 +3,10 @@ package com.servicedesk.app.presentation.tickets
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.servicedesk.app.data.api.AuthApi
 import com.servicedesk.app.data.api.IssueTypesResponseDto
+import com.servicedesk.app.data.api.StaffApi
+import com.servicedesk.app.data.api.StaffBriefDto
 import com.servicedesk.app.data.api.TicketColumnDto
 import com.servicedesk.app.data.api.TicketPatchRequestDto
 import com.servicedesk.app.R
@@ -63,12 +66,20 @@ data class TicketDetailUiState(
     val issueTypes: IssueTypesResponseDto? = null,
     val error: String? = null,
     val saveSuccess: Boolean = false,
+    val isAdmin: Boolean = false,
+    val staff: List<StaffBriefDto> = emptyList(),
+    val assignedTo: Int? = null,
+    val assigneeLabel: String? = null,
+    val isAssigning: Boolean = false,
+    val assignSuccess: Boolean = false,
 )
 
 @HiltViewModel
 class TicketDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val ticketsRepository: TicketsRepository,
+    private val authApi: AuthApi,
+    private val staffApi: StaffApi,
     private val localeStore: LocaleStore,
     private val appStrings: AppStrings,
 ) : ViewModel() {
@@ -88,9 +99,21 @@ class TicketDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             runCatching {
+                val me = authApi.me()
+                val isAdmin = me.staff.role == "admin"
+                val staff = if (isAdmin) {
+                    runCatching { staffApi.list().staff }.getOrDefault(emptyList())
+                } else {
+                    emptyList()
+                }
                 val ticket = ticketsRepository.getTicket(ticketId)
                 val columns = ticketsRepository.loadColumns().columns
                 val issueTypes = ticketsRepository.loadIssueTypes(localeStore.currentLanguage().apiLang)
+                val assigneeLabel = ticket.assignedTo?.let { id ->
+                    staff.find { it.id == id }?.let { member ->
+                        listOfNotNull(member.firstName, member.lastName).joinToString(" ").ifBlank { member.email }
+                    }
+                }
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -99,6 +122,11 @@ class TicketDetailViewModel @Inject constructor(
                         form = ticket.toForm(),
                         columns = columns,
                         issueTypes = issueTypes,
+                        isAdmin = isAdmin,
+                        staff = staff,
+                        assignedTo = ticket.assignedTo,
+                        assigneeLabel = assigneeLabel,
+                        assignSuccess = false,
                     )
                 }
             }.onFailure { e ->
@@ -118,6 +146,34 @@ class TicketDetailViewModel @Inject constructor(
 
     fun onFormChange(form: TicketDetailForm) {
         _uiState.update { it.copy(form = form, saveSuccess = false) }
+    }
+
+    fun assign(managerId: Int) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isAssigning = true, error = null, assignSuccess = false) }
+            runCatching {
+                ticketsRepository.assignTicket(ticketId, managerId)
+            }.onSuccess { updated ->
+                val label = _uiState.value.staff.find { it.id == managerId }?.let { member ->
+                    listOfNotNull(member.firstName, member.lastName).joinToString(" ").ifBlank { member.email }
+                }
+                _uiState.update {
+                    it.copy(
+                        isAssigning = false,
+                        assignedTo = updated.assignedTo,
+                        assigneeLabel = label,
+                        assignSuccess = true,
+                    )
+                }
+            }.onFailure { e ->
+                _uiState.update {
+                    it.copy(
+                        isAssigning = false,
+                        error = e.toAuthMessage(appStrings, R.string.ticket_assign_error),
+                    )
+                }
+            }
+        }
     }
 
     fun save() {
