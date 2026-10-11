@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -17,7 +18,9 @@ import com.servicedesk.app.presentation.components.MainBottomBar
 import com.servicedesk.app.presentation.analytics.AnalyticsScreen
 import com.servicedesk.app.presentation.dialogs.ChatScreen
 import com.servicedesk.app.presentation.dialogs.DialogsScreen
-import com.servicedesk.app.presentation.placeholders.MorePlaceholderScreen
+import com.servicedesk.app.presentation.export.TicketsExportScreen
+import com.servicedesk.app.presentation.more.MoreScreen
+import com.servicedesk.app.presentation.staff.StaffScreen
 import com.servicedesk.app.presentation.tickets.CreateTicketScreen
 import com.servicedesk.app.presentation.tickets.TicketDetailScreen
 import com.servicedesk.app.presentation.tickets.TicketSearchScreen
@@ -29,8 +32,11 @@ fun MainShell(sessionViewModel: SessionViewModel) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: MainRoutes.TICKETS
+    val currentStaff by sessionViewModel.currentStaff.collectAsStateWithLifecycle()
     val showBottomBar = currentRoute != MainRoutes.NEW_TICKET &&
         currentRoute != MainRoutes.TICKET_SEARCH &&
+        currentRoute != MainRoutes.TICKETS_EXPORT &&
+        currentRoute != MainRoutes.STAFF &&
         currentRoute?.startsWith("tickets/detail") != true &&
         currentRoute?.startsWith("dialogs/chat") != true
 
@@ -110,7 +116,18 @@ fun MainShell(sessionViewModel: SessionViewModel) {
             }
             composable(MainRoutes.ANALYTICS) { AnalyticsScreen() }
             composable(MainRoutes.MORE) {
-                MorePlaceholderScreen(onSignOut = sessionViewModel::signOut)
+                MoreScreen(
+                    currentStaff = currentStaff,
+                    onOpenTicketsExport = { navController.navigate(MainRoutes.TICKETS_EXPORT) },
+                    onOpenStaff = { navController.navigate(MainRoutes.STAFF) },
+                    onSignOut = sessionViewModel::signOut,
+                )
+            }
+            composable(MainRoutes.TICKETS_EXPORT) {
+                TicketsExportScreen(onBack = { navController.popBackStack() })
+            }
+            composable(MainRoutes.STAFF) {
+                StaffScreen(onBack = { navController.popBackStack() })
             }
         }
     }

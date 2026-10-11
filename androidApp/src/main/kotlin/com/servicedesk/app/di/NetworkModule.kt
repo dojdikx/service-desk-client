@@ -7,6 +7,7 @@ import com.servicedesk.app.data.api.MediaApi
 import com.servicedesk.app.data.api.MessagesApi
 import com.servicedesk.app.data.api.StaffApi
 import com.servicedesk.app.data.api.TicketsApi
+import com.servicedesk.app.data.api.TicketsExportApi
 import com.servicedesk.app.data.api.UsersApi
 import com.servicedesk.app.data.remote.TokenInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -87,4 +88,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAnalyticsApi(retrofit: Retrofit): AnalyticsApi = retrofit.create(AnalyticsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTicketsExportApi(retrofit: Retrofit): TicketsExportApi =
+        retrofit.create(TicketsExportApi::class.java)
 }

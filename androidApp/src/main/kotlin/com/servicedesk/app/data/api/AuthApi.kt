@@ -7,7 +7,7 @@ import retrofit2.http.POST
 
 interface AuthApi {
     @POST("api/auth/register")
-    suspend fun register(@Body body: RegisterRequestDto): AuthResponseDto
+    suspend fun registerStaff(@Body body: RegisterRequestDto): RegisterStaffResponseDto
 
     @POST("api/auth/login")
     suspend fun login(@Body body: LoginRequestDto): AuthResponseDto
@@ -52,4 +52,9 @@ data class AuthResponseDto(
 data class MeResponseDto(
     val staff: StaffDto,
     val authenticated: Boolean = true,
+)
+
+@Serializable
+data class RegisterStaffResponseDto(
+    val staff: StaffDto,
 )

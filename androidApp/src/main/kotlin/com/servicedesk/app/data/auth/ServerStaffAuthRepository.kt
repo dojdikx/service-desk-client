@@ -2,7 +2,6 @@ package com.servicedesk.app.data.auth
 
 import com.servicedesk.app.data.api.AuthApi
 import com.servicedesk.app.data.api.LoginRequestDto
-import com.servicedesk.app.data.api.RegisterRequestDto
 import com.servicedesk.app.domain.auth.StaffAuthRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,15 +23,7 @@ class ServerStaffAuthRepository @Inject constructor(
         firstName: String,
         lastName: String,
     ) {
-        val response = authApi.register(
-            RegisterRequestDto(
-                email = email,
-                password = password,
-                firstName = firstName.takeIf { it.isNotBlank() },
-                lastName = lastName.takeIf { it.isNotBlank() },
-            ),
-        )
-        tokenStore.save(response.token, response.staff.email)
+        throw UnsupportedOperationException("Регистрация доступна администратору в разделе «Сотрудники»")
     }
 
     override suspend fun signOut() {

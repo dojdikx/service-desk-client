@@ -125,13 +125,6 @@ fun SignInScreen(
                         Text("Войти")
                     }
                 }
-                TextButton(
-                    onClick = onNavigateToRegister,
-                    enabled = !uiState.isLoading,
-                    modifier = Modifier.padding(top = 8.dp),
-                ) {
-                    Text("Создать аккаунт", color = PrimaryBlue)
-                }
             }
         }
     }

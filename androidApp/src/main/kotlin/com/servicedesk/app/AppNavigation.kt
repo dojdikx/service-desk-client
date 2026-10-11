@@ -12,7 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.servicedesk.app.presentation.auth.RegisterScreen
 import com.servicedesk.app.presentation.auth.SignInScreen
 import com.servicedesk.app.presentation.main.MainShell
 import com.servicedesk.app.presentation.session.SessionStatus
@@ -27,6 +26,8 @@ object MainRoutes {
     const val CHAT = "dialogs/chat/{ticketId}"
     const val ANALYTICS = "analytics"
     const val MORE = "more"
+    const val TICKETS_EXPORT = "more/tickets-export"
+    const val STAFF = "more/staff"
 }
 
 object AuthRoutes {
@@ -53,16 +54,8 @@ fun AppNavigation(sessionViewModel: SessionViewModel = hiltViewModel()) {
             ) {
                 composable(AuthRoutes.SIGN_IN) {
                     SignInScreen(
-                        onNavigateToRegister = {
-                            authNavController.navigate(AuthRoutes.REGISTER)
-                        },
+                        onNavigateToRegister = {},
                         onSignedIn = sessionViewModel::onSignedIn,
-                    )
-                }
-                composable(AuthRoutes.REGISTER) {
-                    RegisterScreen(
-                        onNavigateBack = { authNavController.popBackStack() },
-                        onRegistered = sessionViewModel::onSignedIn,
                     )
                 }
             }

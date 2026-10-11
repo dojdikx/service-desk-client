@@ -14,6 +14,7 @@ data class StaffBriefDto(
     val email: String,
     val firstName: String? = null,
     val lastName: String? = null,
+    val role: String = "support_agent",
 )
 
 @Serializable
