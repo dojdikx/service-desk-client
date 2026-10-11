@@ -44,6 +44,7 @@ import com.servicedesk.app.data.api.TicketColumnDto
 import com.servicedesk.app.data.api.TicketShortDto
 import com.servicedesk.app.ui.theme.OnSurfaceMuted
 import com.servicedesk.app.ui.theme.PrimaryBlue
+import com.servicedesk.app.ui.theme.parseHexColor
 
 @Composable
 fun TicketListCard(
@@ -230,15 +231,3 @@ private fun TicketAvatarInitials(name: String) {
     }
 }
 
-private fun parseHexColor(hex: String): Color {
-    val normalized = hex.removePrefix("#")
-    if (normalized.length != 6) return PrimaryBlue
-    return runCatching {
-        val rgb = normalized.toLong(16)
-        Color(
-            red = ((rgb shr 16) and 0xFF) / 255f,
-            green = ((rgb shr 8) and 0xFF) / 255f,
-            blue = (rgb and 0xFF) / 255f,
-        )
-    }.getOrDefault(PrimaryBlue)
-}

@@ -3,10 +3,12 @@ package com.servicedesk.app.presentation.analytics
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.servicedesk.app.data.api.TicketColumnDto
 import com.servicedesk.app.domain.analytics.AnalyticsQuery
 import com.servicedesk.app.domain.analytics.AnalyticsReport
 import com.servicedesk.app.R
 import com.servicedesk.app.domain.analytics.AnalyticsRepository
+import com.servicedesk.app.domain.tickets.TicketsRepository
 import com.servicedesk.app.locale.AppStrings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +32,13 @@ enum class AnalyticsPhase {
 private fun defaultStartDate(): String = LocalDate.now().minusDays(30).toString()
 private fun defaultEndDate(): String = LocalDate.now().toString()
 
+data class StatusBreakdownItem(
+    val status: String,
+    val count: Int,
+    val percent: Int,
+    val colorHex: String,
+)
+
 data class AnalyticsUiState(
     val startDate: String = defaultStartDate(),
     val endDate: String = defaultEndDate(),
@@ -39,6 +48,8 @@ data class AnalyticsUiState(
     val phase: AnalyticsPhase = AnalyticsPhase.IDLE,
     val error: String? = null,
     val report: AnalyticsReport? = null,
+    val columns: List<TicketColumnDto> = emptyList(),
+    val statusItems: List<StatusBreakdownItem> = emptyList(),
     val excelLoading: Boolean = false,
     val excelFile: File? = null,
     val excelError: String? = null,
@@ -47,12 +58,28 @@ data class AnalyticsUiState(
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
+    private val ticketsRepository: TicketsRepository,
     @ApplicationContext private val context: Context,
     private val appStrings: AppStrings,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AnalyticsUiState())
     val uiState: StateFlow<AnalyticsUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            runCatching { ticketsRepository.loadColumns().columns }
+                .onSuccess { columns ->
+                    _uiState.update { state ->
+                        state.copy(
+                            columns = columns,
+                            statusItems = state.report?.let { buildStatusItems(it, columns) }
+                                ?: state.statusItems,
+                        )
+                    }
+                }
+        }
+    }
 
     fun onStartDateChange(value: String) {
         _uiState.update { it.copy(startDate = value) }
@@ -82,6 +109,7 @@ class AnalyticsViewModel @Inject constructor(
                     phase = AnalyticsPhase.LOADING,
                     error = null,
                     report = null,
+                    statusItems = emptyList(),
                     excelFile = null,
                     excelError = null,
                 )
@@ -89,7 +117,11 @@ class AnalyticsViewModel @Inject constructor(
             runCatching { analyticsRepository.loadReport(query) }
                 .onSuccess { report ->
                     _uiState.update {
-                        it.copy(phase = AnalyticsPhase.READY, report = report)
+                        it.copy(
+                            phase = AnalyticsPhase.READY,
+                            report = report,
+                            statusItems = buildStatusItems(report, it.columns),
+                        )
                     }
                 }
                 .onFailure { e ->
@@ -156,6 +188,35 @@ class AnalyticsViewModel @Inject constructor(
             includePrinterModelsBreakdown = state.includePrinterModels,
             includeTicketsBreakdown = state.includeTickets,
         )
+    }
+
+    private fun buildStatusItems(
+        report: AnalyticsReport,
+        columns: List<TicketColumnDto>,
+    ): List<StatusBreakdownItem> {
+        val counts = report.statusBreakdown.associate { it.status to it.count }
+        val total = counts.values.sum().coerceAtLeast(1)
+        val known = columns.map { it.status }.toSet()
+        val fromColumns = columns.map { column ->
+            val count = counts[column.status] ?: 0
+            StatusBreakdownItem(
+                status = column.status,
+                count = count,
+                percent = (count * 100) / total,
+                colorHex = column.color,
+            )
+        }
+        val extras = report.statusBreakdown
+            .filter { it.status !in known }
+            .map { row ->
+                StatusBreakdownItem(
+                    status = row.status,
+                    count = row.count,
+                    percent = (row.count * 100) / total,
+                    colorHex = "#64748b",
+                )
+            }
+        return fromColumns + extras
     }
 
     private fun parseDate(raw: String): LocalDate? =

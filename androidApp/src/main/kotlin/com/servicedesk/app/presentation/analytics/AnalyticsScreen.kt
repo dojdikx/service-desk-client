@@ -1,12 +1,18 @@
 package com.servicedesk.app.presentation.analytics
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -28,9 +34,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.ui.theme.parseHexColor
 import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -174,7 +183,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
             val report = uiState.report
             if (report != null) {
                 item { SummaryCard(report) }
-                if (report.statusBreakdown.isNotEmpty()) {
+                if (uiState.statusItems.isNotEmpty()) {
                     item {
                         Text(
                             text = stringResource(R.string.analytics_statuses),
@@ -182,8 +191,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                             modifier = Modifier.padding(top = 8.dp),
                         )
                     }
-                    items(report.statusBreakdown) { row ->
-                        BreakdownRow(title = row.status, count = row.count)
+                    items(uiState.statusItems, key = { it.status }) { row ->
+                        StatusBreakdownRow(item = row)
                     }
                 }
                 if (report.printerModelBreakdown.isNotEmpty()) {
@@ -194,8 +203,13 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                             modifier = Modifier.padding(top = 8.dp),
                         )
                     }
-                    items(report.printerModelBreakdown) { row ->
-                        BreakdownRow(title = row.printerModel, count = row.count)
+                    val printerTotal = report.printerModelBreakdown.sumOf { it.count }.coerceAtLeast(1)
+                    items(report.printerModelBreakdown, key = { it.printerModel }) { row ->
+                        PrinterBreakdownRow(
+                            title = row.printerModel,
+                            count = row.count,
+                            percent = (row.count * 100) / printerTotal,
+                        )
                     }
                 }
                 if (report.ticketsBreakdown.isNotEmpty()) {
@@ -280,15 +294,103 @@ private fun SummaryCard(report: AnalyticsReport) {
 }
 
 @Composable
-private fun BreakdownRow(title: String, count: Int) {
-    Row(
+private fun StatusBreakdownRow(item: StatusBreakdownItem) {
+    val color = parseHexColor(item.colorHex)
+    val track = MaterialTheme.colorScheme.surfaceVariant
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(text = title, modifier = Modifier.weight(1f))
-        Text(text = count.toString(), style = MaterialTheme.typography.titleSmall)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(color),
+            )
+            Text(
+                text = item.status,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 10.dp, end = 8.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+            )
+            Text(
+                text = item.count.toString(),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = "(${item.percent}%)",
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurfaceMuted,
+                modifier = Modifier.padding(start = 6.dp),
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(track),
+        ) {
+            if (item.percent > 0) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(item.percent / 100f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(color),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrinterBreakdownRow(title: String, count: Int, percent: Int) {
+    val barColor = MaterialTheme.colorScheme.primary
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(text = count.toString(), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = "$percent%",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = OnSurfaceMuted,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+            ) {
+                if (percent > 0) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(percent / 100f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(barColor),
+                    )
+                }
+            }
+        }
     }
 }
 
