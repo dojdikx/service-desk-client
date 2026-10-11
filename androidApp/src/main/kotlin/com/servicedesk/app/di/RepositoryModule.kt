@@ -1,7 +1,9 @@
 package com.servicedesk.app.di
 
 import com.servicedesk.app.data.auth.ServerStaffAuthRepository
+import com.servicedesk.app.data.messages.ServerMessagesRepository
 import com.servicedesk.app.data.tickets.ServerTicketsRepository
+import com.servicedesk.app.domain.messages.MessagesRepository
 import com.servicedesk.app.domain.auth.StaffAuthRepository
 import com.servicedesk.app.domain.tickets.TicketsRepository
 import dagger.Binds
@@ -24,4 +26,10 @@ abstract class RepositoryModule {
     abstract fun bindTicketsRepository(
         impl: ServerTicketsRepository,
     ): TicketsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMessagesRepository(
+        impl: ServerMessagesRepository,
+    ): MessagesRepository
 }

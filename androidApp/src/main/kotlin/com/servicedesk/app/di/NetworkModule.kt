@@ -2,6 +2,7 @@ package com.servicedesk.app.di
 
 import com.servicedesk.app.BuildConfig
 import com.servicedesk.app.data.api.AuthApi
+import com.servicedesk.app.data.api.MessagesApi
 import com.servicedesk.app.data.api.StaffApi
 import com.servicedesk.app.data.api.TicketsApi
 import com.servicedesk.app.data.api.UsersApi
@@ -72,4 +73,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideStaffApi(retrofit: Retrofit): StaffApi = retrofit.create(StaffApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMessagesApi(retrofit: Retrofit): MessagesApi = retrofit.create(MessagesApi::class.java)
 }
