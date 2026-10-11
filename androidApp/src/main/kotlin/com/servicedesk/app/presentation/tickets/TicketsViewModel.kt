@@ -3,6 +3,8 @@ package com.servicedesk.app.presentation.tickets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.servicedesk.app.data.api.AuthApi
+import com.servicedesk.app.data.api.StaffApi
+import com.servicedesk.app.data.api.StaffBriefDto
 import com.servicedesk.app.data.api.TicketShortDto
 import com.servicedesk.app.domain.tickets.TicketsRepository
 import com.servicedesk.app.presentation.auth.toAuthMessage
@@ -27,12 +29,16 @@ data class TicketsUiState(
     val searchQuery: String = "",
     val isAdmin: Boolean = false,
     val error: String? = null,
+    val filters: TicketFiltersState = TicketFiltersState(),
+    val filtersSheetVisible: Boolean = false,
+    val staff: List<StaffBriefDto> = emptyList(),
 )
 
 @HiltViewModel
 class TicketsViewModel @Inject constructor(
     private val ticketsRepository: TicketsRepository,
     private val authApi: AuthApi,
+    private val staffApi: StaffApi,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TicketsUiState())
@@ -47,12 +53,23 @@ class TicketsViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             runCatching {
                 val me = authApi.me()
-                val tickets = ticketsRepository.loadTickets()
+                val isAdmin = me.staff.role == "admin"
+                val staff = if (isAdmin) {
+                    runCatching { staffApi.list().staff }.getOrDefault(emptyList())
+                } else {
+                    emptyList()
+                }
+                val tickets = if (_uiState.value.filters.isActive) {
+                    ticketsRepository.filterTickets(_uiState.value.filters.toQuery())
+                } else {
+                    ticketsRepository.loadTickets()
+                }
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         tickets = tickets,
-                        isAdmin = me.staff.role == "admin",
+                        isAdmin = isAdmin,
+                        staff = staff,
                     )
                 }
             }.onFailure { e ->
@@ -72,6 +89,45 @@ class TicketsViewModel @Inject constructor(
 
     fun onSearchChange(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
+    }
+
+    fun openFiltersSheet() {
+        _uiState.update { it.copy(filtersSheetVisible = true) }
+    }
+
+    fun closeFiltersSheet() {
+        _uiState.update { it.copy(filtersSheetVisible = false) }
+    }
+
+    fun onDraftFiltersChange(filters: TicketFiltersState) {
+        _uiState.update { it.copy(filters = filters) }
+    }
+
+    fun applyFilters() {
+        val state = _uiState.value
+        if (!state.filters.hasAnyField(state.isAdmin)) {
+            _uiState.update { it.copy(error = "Заполните хотя бы одно поле фильтра") }
+            return
+        }
+        _uiState.update {
+            it.copy(
+                filters = state.filters.copy(isActive = true),
+                filtersSheetVisible = false,
+                error = null,
+            )
+        }
+        refresh()
+    }
+
+    fun clearFilters() {
+        _uiState.update {
+            it.copy(
+                filters = TicketFiltersState(),
+                filtersSheetVisible = false,
+                error = null,
+            )
+        }
+        refresh()
     }
 
     fun visibleTickets(): List<TicketShortDto> {
