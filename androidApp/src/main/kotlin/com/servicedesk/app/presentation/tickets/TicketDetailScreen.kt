@@ -325,7 +325,7 @@ private fun IssueTypeFields(
     val subOptions = hierarchy.find { it.issueType == form.issueType }?.subIssueTypes ?: emptyList()
 
     IssueDropdown(
-        label = "Issue type",
+        label = stringResource(R.string.field_issue_type),
         value = form.issueType,
         options = hierarchy.map { it.issueType },
         labels = labels,
@@ -333,7 +333,7 @@ private fun IssueTypeFields(
         onSelect = { onFormChange(form.copy(issueType = it, subIssueType = "", thirdIssueType = "")) },
     )
     IssueDropdown(
-        label = "Sub issue type",
+        label = stringResource(R.string.field_sub_issue_type),
         value = form.subIssueType,
         options = subOptions,
         labels = labels,
@@ -341,7 +341,7 @@ private fun IssueTypeFields(
         onSelect = { onFormChange(form.copy(subIssueType = it)) },
     )
     IssueDropdown(
-        label = "Third issue type",
+        label = stringResource(R.string.field_third_issue_type),
         value = form.thirdIssueType,
         options = issueTypes?.thirdIssueTypes ?: emptyList(),
         labels = labels,

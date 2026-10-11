@@ -28,9 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.servicedesk.app.R
 import com.servicedesk.app.ui.theme.OnSurfaceMuted
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +47,7 @@ fun TicketSearchScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Поиск заявок") },
+                title = { Text(stringResource(R.string.ticket_search_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -64,7 +66,7 @@ fun TicketSearchScreen(
                 value = uiState.query,
                 onValueChange = viewModel::onQueryChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Имя, телефон, серийник, причина…") },
+                placeholder = { Text(stringResource(R.string.ticket_search_hint)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true,
             )
@@ -74,7 +76,7 @@ fun TicketSearchScreen(
                     .fillMaxWidth()
                     .padding(top = 8.dp),
             ) {
-                Text("Найти")
+                Text(stringResource(R.string.ticket_search_action))
             }
 
             when (uiState.phase) {
@@ -89,7 +91,7 @@ fun TicketSearchScreen(
                     ) {
                         Text(uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                         Button(onClick = viewModel::retryLoad, modifier = Modifier.padding(top = 8.dp)) {
-                            Text("Повторить")
+                            Text(stringResource(R.string.action_retry))
                         }
                     }
                 }
@@ -97,7 +99,7 @@ fun TicketSearchScreen(
                 TicketSearchPhase.IDLE -> {
                     if (uiState.history.isNotEmpty()) {
                         Text(
-                            text = "Недавние запросы",
+                            text = stringResource(R.string.ticket_search_recent),
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(top = 20.dp, bottom = 8.dp),
                         )
@@ -111,11 +113,11 @@ fun TicketSearchScreen(
                             }
                         }
                         TextButton(onClick = viewModel::clearHistory) {
-                            Text("Очистить историю")
+                            Text(stringResource(R.string.ticket_search_clear_history))
                         }
                     } else {
                         Text(
-                            text = "Введите запрос и нажмите «Найти»",
+                            text = stringResource(R.string.ticket_search_idle),
                             color = OnSurfaceMuted,
                             modifier = Modifier.padding(top = 24.dp),
                         )
@@ -124,7 +126,7 @@ fun TicketSearchScreen(
 
                 TicketSearchPhase.EMPTY -> {
                     Text(
-                        text = "Ничего не найдено по запросу «${uiState.query}»",
+                        text = stringResource(R.string.ticket_search_no_results, uiState.query),
                         color = OnSurfaceMuted,
                         modifier = Modifier.padding(top = 24.dp),
                     )
@@ -132,7 +134,7 @@ fun TicketSearchScreen(
 
                 TicketSearchPhase.RESULTS -> {
                     Text(
-                        text = "Найдено: ${uiState.results.size}",
+                        text = stringResource(R.string.ticket_search_found_count, uiState.results.size),
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                     )
                     LazyColumn(
@@ -141,7 +143,8 @@ fun TicketSearchScreen(
                     ) {
                         items(uiState.results, key = { it.ticketId }) { ticket ->
                             SearchResultRow(
-                                title = ticket.clientName ?: "Клиент #${ticket.ticketId}",
+                                title = ticket.clientName
+                                    ?: stringResource(R.string.ticket_search_client_id, ticket.ticketId),
                                 subtitle = listOfNotNull(
                                     ticket.contactPhone,
                                     ticket.serialNumber,

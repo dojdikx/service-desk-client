@@ -29,7 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.servicedesk.app.data.api.UserShortDto
@@ -49,7 +51,7 @@ fun CreateTicketScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Новая заявка") },
+                title = { Text(stringResource(R.string.create_ticket_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -79,7 +81,7 @@ fun CreateTicketScreen(
                     OutlinedTextField(
                         value = uiState.reason,
                         onValueChange = viewModel::onReasonChange,
-                        label = { Text("Причина обращения") },
+                        label = { Text(stringResource(R.string.create_ticket_reason)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp),
@@ -102,7 +104,7 @@ fun CreateTicketScreen(
                         if (uiState.isSaving) {
                             CircularProgressIndicator()
                         } else {
-                            Text("Создать")
+                            Text(stringResource(R.string.create_ticket_submit))
                         }
                     }
                 }
@@ -129,7 +131,7 @@ private fun UserDropdown(
             value = selected?.let { "${it.name} (${it.phone})" } ?: "",
             onValueChange = {},
             readOnly = true,
-            label = { Text("Клиент MAX") },
+            label = { Text(stringResource(R.string.create_ticket_client_max)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor()

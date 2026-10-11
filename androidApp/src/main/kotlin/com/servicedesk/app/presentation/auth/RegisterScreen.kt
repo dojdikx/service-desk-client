@@ -24,10 +24,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.servicedesk.app.R
 import com.servicedesk.app.presentation.components.PasswordTextField
 import com.servicedesk.app.ui.theme.BackgroundLight
 import com.servicedesk.app.ui.theme.OnSurfaceMuted
@@ -50,7 +52,7 @@ fun RegisterScreen(
     ) {
         TextButton(onClick = onNavigateBack, enabled = !uiState.isLoading) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-            Text("Назад", modifier = Modifier.padding(start = 4.dp))
+            Text(stringResource(R.string.action_back), modifier = Modifier.padding(start = 4.dp))
         }
 
         Surface(
@@ -61,12 +63,12 @@ fun RegisterScreen(
         ) {
             Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp)) {
                 Text(
-                    text = "Регистрация",
+                    text = stringResource(R.string.register_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = "Новый сотрудник поддержки",
+                    text = stringResource(R.string.register_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = OnSurfaceMuted,
                     modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
@@ -75,8 +77,8 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = uiState.email,
                     onValueChange = viewModel::onEmailChange,
-                    label = { Text("Почта") },
-                    placeholder = { Text("name@service.desk") },
+                    label = { Text(stringResource(R.string.auth_email)) },
+                    placeholder = { Text(stringResource(R.string.register_email_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = !uiState.isLoading,
@@ -85,8 +87,8 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = uiState.firstName,
                     onValueChange = viewModel::onFirstNameChange,
-                    label = { Text("Имя") },
-                    placeholder = { Text("Иван") },
+                    label = { Text(stringResource(R.string.staff_first_name)) },
+                    placeholder = { Text(stringResource(R.string.register_first_name_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = !uiState.isLoading,
@@ -95,8 +97,8 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = uiState.lastName,
                     onValueChange = viewModel::onLastNameChange,
-                    label = { Text("Фамилия") },
-                    placeholder = { Text("Петров") },
+                    label = { Text(stringResource(R.string.staff_last_name)) },
+                    placeholder = { Text(stringResource(R.string.register_last_name_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = !uiState.isLoading,
@@ -105,16 +107,16 @@ fun RegisterScreen(
                 PasswordTextField(
                     value = uiState.password,
                     onValueChange = viewModel::onPasswordChange,
-                    label = "Пароль",
-                    placeholder = "Пароль",
+                    label = stringResource(R.string.auth_password),
+                    placeholder = stringResource(R.string.auth_password),
                     enabled = !uiState.isLoading,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 PasswordTextField(
                     value = uiState.passwordRepeat,
                     onValueChange = viewModel::onPasswordRepeatChange,
-                    label = "Повторите пароль",
-                    placeholder = "Пароль ещё раз",
+                    label = stringResource(R.string.register_password_repeat),
+                    placeholder = stringResource(R.string.register_password_repeat_placeholder),
                     enabled = !uiState.isLoading,
                 )
 
@@ -144,7 +146,7 @@ fun RegisterScreen(
                             strokeWidth = 2.dp,
                         )
                     } else {
-                        Text("Создать аккаунт")
+                        Text(stringResource(R.string.register_create_account))
                     }
                 }
                 TextButton(
@@ -154,7 +156,7 @@ fun RegisterScreen(
                         .fillMaxWidth()
                         .padding(top = 4.dp),
                 ) {
-                    Text("Уже есть аккаунт? Войти", color = PrimaryBlue)
+                    Text(stringResource(R.string.register_have_account), color = PrimaryBlue)
                 }
             }
         }

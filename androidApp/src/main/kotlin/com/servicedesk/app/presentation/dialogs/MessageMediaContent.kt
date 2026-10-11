@@ -19,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import coil.compose.AsyncImage
 import coil.ImageLoader
 import com.servicedesk.app.data.api.MediaItemDto
@@ -69,11 +71,11 @@ fun MessageMediaContent(
                 }
                 "video" -> MediaFileRow(
                     icon = { Icon(Icons.Default.PlayCircle, contentDescription = null) },
-                    title = item.mediaFileName ?: "Видео",
+                    title = item.mediaFileName ?: stringResource(R.string.media_video),
                 )
                 else -> MediaFileRow(
                     icon = { Icon(Icons.Default.Description, contentDescription = null) },
-                    title = item.mediaFileName ?: "Файл",
+                    title = item.mediaFileName ?: stringResource(R.string.media_file),
                 )
             }
             val caption = item.mediaCaption?.takeIf { it.isNotBlank() }

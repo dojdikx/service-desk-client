@@ -102,9 +102,9 @@
     <string name="field_sku_remark">SKU remark</string>
     <string name="field_order_id">Order ID</string>
     <string name="field_product_type">Product type</string>
-    <string name="field_issue_type">Issue type</string>
-    <string name="field_sub_issue_type">Sub issue type</string>
-    <string name="field_third_issue_type">Third issue type</string>
+    <string name="field_issue_type">问题类型</string>
+    <string name="field_sub_issue_type">问题子类型</string>
+    <string name="field_third_issue_type">第三级分类</string>
 
     <string name="create_ticket_title">新建工单</string>
     <string name="create_ticket_user">客户</string>
@@ -115,8 +115,37 @@
     <string name="create_ticket_select_user">请选择客户</string>
 
     <string name="dialogs_empty">暂无对话</string>
+    <string name="dialogs_subtitle">与 MAX 客户的对话</string>
     <string name="dialogs_error_load">无法加载对话</string>
     <string name="dialogs_unread">%1$d 条未读</string>
+    <string name="text_em_dash">—</string>
+
+    <string name="ticket_search_no_results">未找到与「%1$s」相关的结果</string>
+    <string name="ticket_search_found_count">找到 %1$d 条</string>
+    <string name="ticket_search_client_id">客户 #%1$d</string>
+
+    <string name="create_ticket_client_max">MAX 客户</string>
+    <string name="tickets_filter_reset">重置筛选</string>
+    <string name="tickets_filter_staff_hint">列表：GET /api/staff</string>
+
+    <string name="register_title">注册</string>
+    <string name="register_subtitle">新客服账号</string>
+    <string name="register_email_placeholder">name@service.desk</string>
+    <string name="register_first_name_placeholder">明</string>
+    <string name="register_last_name_placeholder">张</string>
+    <string name="register_password_repeat">确认密码</string>
+    <string name="register_password_repeat_placeholder">再次输入密码</string>
+    <string name="register_create_account">创建账号</string>
+    <string name="register_have_account">已有账号？登录</string>
+    <string name="register_error_email">请填写邮箱</string>
+    <string name="register_error_password_length">密码至少 6 位</string>
+    <string name="register_error_password_mismatch">两次密码不一致</string>
+    <string name="auth_signup_disabled">请由管理员在「员工」中注册</string>
+
+    <string name="placeholder_tickets_subtitle">看板与筛选将在后续版本提供</string>
+    <string name="placeholder_dialogs_subtitle">MAX 客户聊天列表</string>
+    <string name="placeholder_analytics_subtitle">时间段报表</string>
+    <string name="placeholder_more_subtitle">导出、员工、语言</string>
 
     <string name="chat_message_hint">消息</string>
     <string name="chat_load_older">更早的消息</string>
@@ -178,4 +207,5 @@
     <string name="staff_error_list">无法加载列表</string>
     <string name="staff_error_register">注册失败</string>
     <string name="staff_validation">请填写邮箱和密码（至少 6 位）</string>
+    <string name="field_email">邮箱</string>
 </resources>

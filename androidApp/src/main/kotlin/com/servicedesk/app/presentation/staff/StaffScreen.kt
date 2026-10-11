@@ -67,7 +67,7 @@ fun StaffScreen(
                     value = uiState.email,
                     onValueChange = viewModel::onEmailChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Email") },
+                    label = { Text(stringResource(R.string.field_email)) },
                     singleLine = true,
                 )
             }

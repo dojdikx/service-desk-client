@@ -31,7 +31,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import com.servicedesk.app.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.servicedesk.app.data.api.TicketShortDto
@@ -65,13 +67,13 @@ fun DialogsScreen(
             .padding(horizontal = 16.dp),
     ) {
         Text(
-            text = "Диалоги",
+            text = stringResource(R.string.nav_dialogs),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
         )
         Text(
-            text = "Переписка с клиентами в MAX",
+            text = stringResource(R.string.dialogs_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = OnSurfaceMuted,
             modifier = Modifier.padding(bottom = 12.dp),
@@ -91,14 +93,14 @@ fun DialogsScreen(
                 ) {
                     Text(uiState.error ?: "", color = MaterialTheme.colorScheme.error)
                     Button(onClick = viewModel::refresh, modifier = Modifier.padding(top = 12.dp)) {
-                        Text("Повторить")
+                        Text(stringResource(R.string.action_retry))
                     }
                 }
             }
 
             uiState.tickets.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Диалогов пока нет", color = OnSurfaceMuted)
+                    Text(stringResource(R.string.dialogs_empty), color = OnSurfaceMuted)
                 }
             }
 
@@ -140,7 +142,7 @@ private fun DialogTicketRow(ticket: TicketShortDto, onClick: () -> Unit) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = ticket.clientName ?: "Клиент",
+                        text = ticket.clientName ?: stringResource(R.string.ticket_client_fallback),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f),
@@ -164,7 +166,7 @@ private fun DialogTicketRow(ticket: TicketShortDto, onClick: () -> Unit) {
                     }
                 }
                 Text(
-                    text = ticket.lastMessage ?: ticket.reason ?: "—",
+                    text = ticket.lastMessage ?: ticket.reason ?: stringResource(R.string.text_em_dash),
                     style = MaterialTheme.typography.bodyMedium,
                     color = OnSurfaceMuted,
                     maxLines = 2,

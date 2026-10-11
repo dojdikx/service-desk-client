@@ -5,7 +5,9 @@ import com.servicedesk.app.data.api.AnalyticsApi
 import com.servicedesk.app.data.api.AnalyticsRequestDto
 import com.servicedesk.app.domain.analytics.AnalyticsQuery
 import com.servicedesk.app.domain.analytics.AnalyticsReport
+import com.servicedesk.app.R
 import com.servicedesk.app.domain.analytics.AnalyticsRepository
+import com.servicedesk.app.locale.AppStrings
 import com.servicedesk.app.domain.analytics.AnalyticsTicketRow
 import com.servicedesk.app.domain.analytics.PrinterModelCount
 import com.servicedesk.app.domain.analytics.StatusCount
@@ -22,6 +24,7 @@ import okhttp3.Request
 class ServerAnalyticsRepository @Inject constructor(
     private val api: AnalyticsApi,
     private val okHttpClient: OkHttpClient,
+    private val appStrings: AppStrings,
 ) : AnalyticsRepository {
 
     override suspend fun loadReport(query: AnalyticsQuery): AnalyticsReport {
@@ -36,9 +39,9 @@ class ServerAnalyticsRepository @Inject constructor(
             val request = Request.Builder().url(url).get().build()
             okHttpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    throw IOException("Не удалось скачать файл (${response.code})")
+                    throw IOException(appStrings.get(R.string.download_error, response.code))
                 }
-                val bytes = response.body?.bytes() ?: throw IOException("Пустой ответ")
+                val bytes = response.body?.bytes() ?: throw IOException(appStrings.get(R.string.download_empty))
                 val fileName = excelPath.substringAfterLast('/').ifBlank { "analytics.xlsx" }
                 val file = File(targetDir, fileName)
                 file.writeBytes(bytes)

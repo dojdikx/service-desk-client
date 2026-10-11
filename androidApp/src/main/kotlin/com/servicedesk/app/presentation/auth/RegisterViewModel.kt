@@ -43,15 +43,15 @@ class RegisterViewModel @Inject constructor(
         val state = _uiState.value
         val email = state.email.trim()
         if (email.isBlank()) {
-            _uiState.update { it.copy(error = "Укажите почту") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.register_error_email)) }
             return
         }
         if (state.password.length < 6) {
-            _uiState.update { it.copy(error = "Пароль не короче 6 символов") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.register_error_password_length)) }
             return
         }
         if (state.password != state.passwordRepeat) {
-            _uiState.update { it.copy(error = "Пароли не совпадают") }
+            _uiState.update { it.copy(error = appStrings.get(R.string.register_error_password_mismatch)) }
             return
         }
         viewModelScope.launch {

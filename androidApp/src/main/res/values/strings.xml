@@ -102,9 +102,9 @@
     <string name="field_sku_remark">SKU remark</string>
     <string name="field_order_id">Order ID</string>
     <string name="field_product_type">Product type</string>
-    <string name="field_issue_type">Issue type</string>
-    <string name="field_sub_issue_type">Sub issue type</string>
-    <string name="field_third_issue_type">Third issue type</string>
+    <string name="field_issue_type">Тип проблемы</string>
+    <string name="field_sub_issue_type">Подтип проблемы</string>
+    <string name="field_third_issue_type">Третий уровень</string>
 
     <string name="create_ticket_title">Новая заявка</string>
     <string name="create_ticket_user">Клиент</string>
@@ -115,8 +115,37 @@
     <string name="create_ticket_select_user">Выберите клиента</string>
 
     <string name="dialogs_empty">Диалогов пока нет</string>
+    <string name="dialogs_subtitle">Переписка с клиентами в MAX</string>
     <string name="dialogs_error_load">Не удалось загрузить диалоги</string>
     <string name="dialogs_unread">%1$d непрочитанных</string>
+    <string name="text_em_dash">—</string>
+
+    <string name="ticket_search_no_results">Ничего не найдено по запросу «%1$s»</string>
+    <string name="ticket_search_found_count">Найдено: %1$d</string>
+    <string name="ticket_search_client_id">Клиент #%1$d</string>
+
+    <string name="create_ticket_client_max">Клиент MAX</string>
+    <string name="tickets_filter_reset">Сбросить фильтры</string>
+    <string name="tickets_filter_staff_hint">Список: GET /api/staff</string>
+
+    <string name="register_title">Регистрация</string>
+    <string name="register_subtitle">Новый сотрудник поддержки</string>
+    <string name="register_email_placeholder">name@service.desk</string>
+    <string name="register_first_name_placeholder">Иван</string>
+    <string name="register_last_name_placeholder">Петров</string>
+    <string name="register_password_repeat">Повторите пароль</string>
+    <string name="register_password_repeat_placeholder">Пароль ещё раз</string>
+    <string name="register_create_account">Создать аккаунт</string>
+    <string name="register_have_account">Уже есть аккаунт? Войти</string>
+    <string name="register_error_email">Укажите почту</string>
+    <string name="register_error_password_length">Пароль не короче 6 символов</string>
+    <string name="register_error_password_mismatch">Пароли не совпадают</string>
+    <string name="auth_signup_disabled">Регистрация доступна администратору в разделе «Сотрудники»</string>
+
+    <string name="placeholder_tickets_subtitle">Канбан и фильтры появятся в следующих коммитах</string>
+    <string name="placeholder_dialogs_subtitle">Список чатов с клиентами MAX</string>
+    <string name="placeholder_analytics_subtitle">Отчёты за период</string>
+    <string name="placeholder_more_subtitle">Выгрузка, сотрудники, тема</string>
 
     <string name="chat_message_hint">Сообщение</string>
     <string name="chat_load_older">Ранние сообщения</string>
@@ -178,4 +207,5 @@
     <string name="staff_error_list">Не удалось загрузить список</string>
     <string name="staff_error_register">Не удалось зарегистрировать</string>
     <string name="staff_validation">Укажите email и пароль (не короче 6 символов)</string>
+    <string name="field_email">Email</string>
 </resources>

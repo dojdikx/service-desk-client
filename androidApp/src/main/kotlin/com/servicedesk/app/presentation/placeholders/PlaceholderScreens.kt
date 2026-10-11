@@ -10,25 +10,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.servicedesk.app.BuildConfig
+import com.servicedesk.app.R
 
 @Composable
 fun TicketsPlaceholderScreen() = PlaceholderScreen(
-    title = "Тикеты",
-    subtitle = "Канбан и фильтры появятся в следующих коммитах",
+    title = stringResource(R.string.nav_tickets),
+    subtitle = stringResource(R.string.placeholder_tickets_subtitle),
 )
 
 @Composable
 fun DialogsPlaceholderScreen() = PlaceholderScreen(
-    title = "Диалоги",
-    subtitle = "Список чатов с клиентами MAX",
+    title = stringResource(R.string.nav_dialogs),
+    subtitle = stringResource(R.string.placeholder_dialogs_subtitle),
 )
 
 @Composable
 fun AnalyticsPlaceholderScreen() = PlaceholderScreen(
-    title = "Аналитика",
-    subtitle = "Отчёты за период",
+    title = stringResource(R.string.nav_analytics),
+    subtitle = stringResource(R.string.placeholder_analytics_subtitle),
 )
 
 @Composable
@@ -40,9 +42,9 @@ fun MorePlaceholderScreen(onSignOut: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = "Ещё", style = MaterialTheme.typography.headlineMedium)
+        Text(text = stringResource(R.string.more_title), style = MaterialTheme.typography.headlineMedium)
         Text(
-            text = "Выгрузка, сотрудники, тема",
+            text = stringResource(R.string.placeholder_more_subtitle),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
@@ -51,7 +53,7 @@ fun MorePlaceholderScreen(onSignOut: () -> Unit) {
             onClick = onSignOut,
             modifier = Modifier.padding(top = 24.dp),
         ) {
-            Text("Выйти")
+            Text(stringResource(R.string.action_sign_out))
         }
     }
 }

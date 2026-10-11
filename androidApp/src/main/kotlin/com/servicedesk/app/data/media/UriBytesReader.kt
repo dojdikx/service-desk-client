@@ -3,6 +3,7 @@ package com.servicedesk.app.data.media
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.servicedesk.app.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -10,7 +11,7 @@ suspend fun Context.readUriBytes(uri: Uri): Triple<ByteArray, String, String> = 
     val mime = contentResolver.getType(uri) ?: "application/octet-stream"
     val name = queryDisplayName(uri) ?: "upload"
     val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
-        ?: throw IllegalArgumentException("Не удалось прочитать файл")
+        ?: throw IllegalArgumentException(getString(R.string.chat_error_file_read))
     Triple(bytes, name, mime)
 }
 

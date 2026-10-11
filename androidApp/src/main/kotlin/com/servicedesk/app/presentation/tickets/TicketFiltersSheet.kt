@@ -14,7 +14,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.servicedesk.app.R
 import com.servicedesk.app.data.api.StaffBriefDto
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,11 +44,14 @@ fun TicketFiltersSheet(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 8.dp),
         ) {
-            Text(text = "Фильтры заявок", style = androidx.compose.material3.MaterialTheme.typography.titleLarge)
+            Text(
+                text = stringResource(R.string.tickets_filters_title),
+                style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
+            )
             OutlinedTextField(
                 value = filters.startDate,
                 onValueChange = { onFiltersChange(filters.copy(startDate = it)) },
-                label = { Text("Дата с (ГГГГ-ММ-ДД)") },
+                label = { Text(stringResource(R.string.tickets_filter_date_from)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
@@ -55,7 +60,7 @@ fun TicketFiltersSheet(
             OutlinedTextField(
                 value = filters.endDate,
                 onValueChange = { onFiltersChange(filters.copy(endDate = it)) },
-                label = { Text("Дата по") },
+                label = { Text(stringResource(R.string.tickets_filter_date_to)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -64,7 +69,7 @@ fun TicketFiltersSheet(
             OutlinedTextField(
                 value = filters.tag,
                 onValueChange = { onFiltersChange(filters.copy(tag = it)) },
-                label = { Text("Тег (подстрока)") },
+                label = { Text(stringResource(R.string.tickets_filter_tag)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -73,7 +78,7 @@ fun TicketFiltersSheet(
             OutlinedTextField(
                 value = filters.serialNumber,
                 onValueChange = { onFiltersChange(filters.copy(serialNumber = it)) },
-                label = { Text("Серийный номер") },
+                label = { Text(stringResource(R.string.tickets_filter_serial)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -86,10 +91,10 @@ fun TicketFiltersSheet(
                         val id = raw.trim().toIntOrNull()
                         onFiltersChange(filters.copy(managerId = id))
                     },
-                    label = { Text("ID исполнителя") },
+                    label = { Text(stringResource(R.string.tickets_filter_manager)) },
                     placeholder = {
                         val hint = staff.firstOrNull()?.let { "${it.id} — ${it.displayName()}" }
-                        Text(hint ?: "Список: GET /api/staff")
+                        Text(hint ?: stringResource(R.string.tickets_filter_staff_hint))
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,13 +108,13 @@ fun TicketFiltersSheet(
                     .fillMaxWidth()
                     .padding(top = 16.dp),
             ) {
-                Text("Применить")
+                Text(stringResource(R.string.tickets_filter_apply))
             }
             TextButton(
                 onClick = onClear,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Сбросить фильтры")
+                Text(stringResource(R.string.tickets_filter_reset))
             }
         }
     }
