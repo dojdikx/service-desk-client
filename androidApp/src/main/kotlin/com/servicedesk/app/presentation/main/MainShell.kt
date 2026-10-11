@@ -15,7 +15,7 @@ import com.servicedesk.app.presentation.components.MainBottomBar
 import com.servicedesk.app.presentation.placeholders.AnalyticsPlaceholderScreen
 import com.servicedesk.app.presentation.placeholders.DialogsPlaceholderScreen
 import com.servicedesk.app.presentation.placeholders.MorePlaceholderScreen
-import com.servicedesk.app.presentation.placeholders.TicketsPlaceholderScreen
+import com.servicedesk.app.presentation.tickets.TicketsScreen
 import com.servicedesk.app.presentation.session.SessionViewModel
 
 @Composable
@@ -45,7 +45,7 @@ fun MainShell(sessionViewModel: SessionViewModel) {
             startDestination = MainRoutes.TICKETS,
             modifier = Modifier.padding(paddingValues),
         ) {
-            composable(MainRoutes.TICKETS) { TicketsPlaceholderScreen() }
+            composable(MainRoutes.TICKETS) { TicketsScreen() }
             composable(MainRoutes.DIALOGS) { DialogsPlaceholderScreen() }
             composable(MainRoutes.ANALYTICS) { AnalyticsPlaceholderScreen() }
             composable(MainRoutes.MORE) {
