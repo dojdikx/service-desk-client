@@ -1,8 +1,10 @@
 package com.servicedesk.app.di
 
+import com.servicedesk.app.data.analytics.ServerAnalyticsRepository
 import com.servicedesk.app.data.auth.ServerStaffAuthRepository
 import com.servicedesk.app.data.messages.ServerMessagesRepository
 import com.servicedesk.app.data.tickets.ServerTicketsRepository
+import com.servicedesk.app.domain.analytics.AnalyticsRepository
 import com.servicedesk.app.domain.messages.MessagesRepository
 import com.servicedesk.app.domain.auth.StaffAuthRepository
 import com.servicedesk.app.domain.tickets.TicketsRepository
@@ -32,4 +34,10 @@ abstract class RepositoryModule {
     abstract fun bindMessagesRepository(
         impl: ServerMessagesRepository,
     ): MessagesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAnalyticsRepository(
+        impl: ServerAnalyticsRepository,
+    ): AnalyticsRepository
 }

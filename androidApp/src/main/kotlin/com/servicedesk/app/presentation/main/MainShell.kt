@@ -14,7 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.servicedesk.app.MainRoutes
 import com.servicedesk.app.presentation.components.MainBottomBar
-import com.servicedesk.app.presentation.placeholders.AnalyticsPlaceholderScreen
+import com.servicedesk.app.presentation.analytics.AnalyticsScreen
 import com.servicedesk.app.presentation.dialogs.ChatScreen
 import com.servicedesk.app.presentation.dialogs.DialogsScreen
 import com.servicedesk.app.presentation.placeholders.MorePlaceholderScreen
@@ -108,7 +108,7 @@ fun MainShell(sessionViewModel: SessionViewModel) {
                     },
                 )
             }
-            composable(MainRoutes.ANALYTICS) { AnalyticsPlaceholderScreen() }
+            composable(MainRoutes.ANALYTICS) { AnalyticsScreen() }
             composable(MainRoutes.MORE) {
                 MorePlaceholderScreen(onSignOut = sessionViewModel::signOut)
             }
