@@ -6,6 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface TicketsApi {
     @GET("api/tickets/columns")
@@ -13,6 +14,15 @@ interface TicketsApi {
 
     @GET("api/tickets")
     suspend fun list(): TicketListResponseDto
+
+    @GET("api/tickets/filter")
+    suspend fun filter(
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("tag_str") tagStr: String? = null,
+        @Query("serial_number") serialNumber: String? = null,
+        @Query("manager") manager: Int? = null,
+    ): TicketListResponseDto
 
     @GET("api/tickets/{id}")
     suspend fun get(@Path("id") id: Int): TicketDetailDto
